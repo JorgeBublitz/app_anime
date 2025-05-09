@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/manga.dart';
 import '../colors/app_colors.dart';
+import '../screens/manga_detail_screen.dart';
 
 class MangaCard extends StatelessWidget {
   final Manga manga;
@@ -11,7 +12,12 @@ class MangaCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navegar para detalhes
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MangaDetailScreen(manga: manga),
+          ),
+        );
       },
       child: Container(
         decoration: BoxDecoration(

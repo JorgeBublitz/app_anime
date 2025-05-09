@@ -1,4 +1,5 @@
 class Anime {
+  final String id;
   final String nome;
   final String imagemUrl;
   final String nota;
@@ -10,6 +11,7 @@ class Anime {
   final String status;
 
   Anime({
+    required this.id,
     required this.nome,
     required this.imagemUrl,
     required this.nota,
@@ -23,11 +25,12 @@ class Anime {
 
   factory Anime.fromJson(Map<String, dynamic> json) {
     return Anime(
+      id: json['mal_id'].toString(),
       nome: json['title'] ?? '',
       imagemUrl: json['images']?['jpg']?['image_url'] ?? '',
       nota: json['score']?.toString() ?? '0',
       rank: json['rank']?.toString() ?? '-',
-      descricao: json['synopsis'] ?? '',
+      descricao: json['synopsis'] ?? 'Sem sinopse',
       episodios: json['episodes']?.toString() ?? '-',
       tipo: json['type'] ?? '-',
       popularidade: json['popularity']?.toString() ?? '-',

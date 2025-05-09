@@ -1,5 +1,7 @@
 // lib/api_service.dart
+import 'package:app/models/mangaPerson.dart';
 import 'package:http/http.dart' as http;
+import 'models/animePerson.dart';
 import 'dart:convert';
 
 Future<List<dynamic>> buscarAnimes() async {
@@ -39,5 +41,31 @@ Future<List<dynamic>> topMangas() async {
     return json["data"]; // Retorna apenas a lista dos top 10 animes
   } else {
     throw Exception("Erro ao carregar os animes");
+  }
+}
+
+Future<List<AnimePerson>> buscarPersonagens(int animeId) async {
+  final url = 'https://api.jikan.moe/v4/anime/$animeId/characters';
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    final jsonData = json.decode(response.body);
+    final List<dynamic> personagensJson = jsonData['data'];
+    return personagensJson.map((json) => AnimePerson.fromJson(json)).toList();
+  } else {
+    throw Exception('Erro ao carregar personagens');
+  }
+}
+
+Future<List<MangaPerson>> buscarPersonagensM(int mangaId) async {
+  final url = 'https://api.jikan.moe/v4/manga/$mangaId/characters';
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    final jsonData = json.decode(response.body);
+    final List<dynamic> personagensJson = jsonData['data'];
+    return personagensJson.map((json) => MangaPerson.fromJson(json)).toList();
+  } else {
+    throw Exception('Erro ao carregar personagens');
   }
 }
