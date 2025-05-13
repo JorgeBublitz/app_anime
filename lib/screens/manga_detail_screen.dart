@@ -21,7 +21,7 @@ class _AnimeDetailScreenState extends State<MangaDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _futureCharacters = buscarPersonagensM(int.parse(widget.manga.id));
+    _futureCharacters = ApiService.buscarPersonagensM(int.parse(widget.manga.id));
   }
 
   @override

@@ -1,59 +1,78 @@
-// anime_person_card.dart
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../models/animePerson.dart';
 import '../colors/app_colors.dart';
 
 class AnimePersonCard extends StatelessWidget {
   final AnimePerson personAnime;
+  final bool compactMode;
+  final VoidCallback? onTap;
 
-  const AnimePersonCard({Key? key, required this.personAnime})
-    : super(key: key);
+  const AnimePersonCard({
+    super.key,
+    required this.personAnime,
+    this.compactMode = false,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {},
+      onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: AppColors.cor2,
+          color: AppColors.cor3,
           borderRadius: BorderRadius.circular(8),
         ),
-        width: 120,
-        height: 180,
+        width: compactMode ? 100 : 120,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(8),
-              ),
-              child: Image.network(
-                personAnime.imagemUrl,
-                width: double.infinity,
-                height: 135,
-                fit: BoxFit.cover,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(6.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    personAnime.nome,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                ],
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [_buildImage(), _buildName()],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImage() {
+    return ClipRRect(
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+      child: CachedNetworkImage(
+        imageUrl: personAnime.imagemUrl,
+        width: double.infinity,
+        height: compactMode ? 100 : 135,
+        fit: BoxFit.cover,
+        progressIndicatorBuilder:
+            (_, __, progress) => Center(
+              child: CircularProgressIndicator(
+                value: progress.progress,
+                color: AppColors.cor3,
               ),
             ),
-          ],
+        errorWidget:
+            (_, __, ___) => Container(
+              color: AppColors.cor2,
+              child: const Icon(
+                Icons.person_off_outlined,
+                color: Colors.white54,
+                size: 40,
+              ),
+            ),
+      ),
+    );
+  }
+
+  Widget _buildName() {
+    return Padding(
+      padding: const EdgeInsets.all(6).copyWith(top: 8),
+      child: Text(
+        personAnime.nome,
+        maxLines: compactMode ? 1 : 2,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: compactMode ? 12 : 14,
+          fontWeight: FontWeight.w500,
         ),
       ),
     );

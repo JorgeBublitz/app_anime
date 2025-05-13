@@ -1,71 +1,56 @@
-// lib/api_service.dart
-import 'package:app/models/mangaPerson.dart';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'models/animePerson.dart';
-import 'dart:convert';
+import 'models/mangaPerson.dart';
 
-Future<List<dynamic>> buscarAnimes() async {
-  final url = Uri.parse("https://api.jikan.moe/v4/anime");
-  final resposta = await http.get(url);
+class ApiService {
+  static const _baseUrl = "https://api.jikan.moe/v4";
 
-  if (resposta.statusCode == 200) {
-    final json = jsonDecode(resposta.body);
-    return json["data"]; // Retorna apenas a lista de animes
-  } else {
-    throw Exception("Erro ao carregar os animes");
+  // Método genérico para buscar dados
+  static Future<List<Map<String, dynamic>>> _getListData(
+    String endpoint,
+  ) async {
+    try {
+      final response = await http.get(Uri.parse("$_baseUrl/$endpoint"));
+
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body);
+        return List<Map<String, dynamic>>.from(jsonData['data']);
+      }
+      throw Exception("Erro ${response.statusCode}: ${response.reasonPhrase}");
+    } catch (e) {
+      throw Exception("Erro de conexão: $e");
+    }
   }
-}
 
-Future<List<dynamic>> topAnimes() async {
-  final url = Uri.parse(
-    "https://api.jikan.moe/v4/top/anime?limit=10",
-  ); // limit=10 para pegar apenas os 10 primeiros
-  final resposta = await http.get(url);
+  // Métodos para Animes
+  static Future<List<Map<String, dynamic>>> buscarAnimes() =>
+      _getListData("anime");
+  static Future<List<Map<String, dynamic>>> topAnimes() =>
+      _getListData("top/anime?limit=10");
 
-  if (resposta.statusCode == 200) {
-    final json = jsonDecode(resposta.body);
-    return json["data"]; // Retorna apenas a lista dos top 10 animes
-  } else {
-    throw Exception("Erro ao carregar os animes");
+  // Métodos para Mangás
+  static Future<List<Map<String, dynamic>>> buscarMangas() =>
+      _getListData("manga");
+  static Future<List<Map<String, dynamic>>> topMangas() =>
+      _getListData("top/manga?limit=10");
+
+  // Métodos para Personagens
+  static Future<List<AnimePerson>> buscarPersonagens(int animeId) async {
+    final data = await _getListData("anime/$animeId/characters");
+    return data
+        .map((json) => AnimePerson.fromJson(json))
+        .where((p) => p.funcao.toLowerCase().contains('main'))
+        .toList();
   }
-}
 
-Future<List<dynamic>> topMangas() async {
-  final url = Uri.parse(
-    "https://api.jikan.moe/v4/top/manga?limit=10",
-  ); // limit=10 para pegar apenas os 10 primeiros
-  final resposta = await http.get(url);
-
-  if (resposta.statusCode == 200) {
-    final json = jsonDecode(resposta.body);
-    return json["data"]; // Retorna apenas a lista dos top 10 animes
-  } else {
-    throw Exception("Erro ao carregar os animes");
+  static Future<List<AnimePerson>> buscarTodosPersonagens(int animeId) async {
+    final data = await _getListData("anime/$animeId/characters");
+    return data.map((json) => AnimePerson.fromJson(json)).toList();
   }
-}
 
-Future<List<AnimePerson>> buscarPersonagens(int animeId) async {
-  final url = 'https://api.jikan.moe/v4/anime/$animeId/characters';
-  final response = await http.get(Uri.parse(url));
-
-  if (response.statusCode == 200) {
-    final jsonData = json.decode(response.body);
-    final List<dynamic> personagensJson = jsonData['data'];
-    return personagensJson.map((json) => AnimePerson.fromJson(json)).toList();
-  } else {
-    throw Exception('Erro ao carregar personagens');
-  }
-}
-
-Future<List<MangaPerson>> buscarPersonagensM(int mangaId) async {
-  final url = 'https://api.jikan.moe/v4/manga/$mangaId/characters';
-  final response = await http.get(Uri.parse(url));
-
-  if (response.statusCode == 200) {
-    final jsonData = json.decode(response.body);
-    final List<dynamic> personagensJson = jsonData['data'];
-    return personagensJson.map((json) => MangaPerson.fromJson(json)).toList();
-  } else {
-    throw Exception('Erro ao carregar personagens');
+  static Future<List<MangaPerson>> buscarPersonagensM(int mangaId) async {
+    final data = await _getListData("manga/$mangaId/characters");
+    return data.map((json) => MangaPerson.fromJson(json)).toList();
   }
 }

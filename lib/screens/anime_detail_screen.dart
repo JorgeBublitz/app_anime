@@ -1,230 +1,449 @@
-// anime_detail_screen.dart
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 import '../../models/anime.dart';
 import '../../models/animePerson.dart';
 import '../../colors/app_colors.dart';
-import '../widgets/anime_person_card.dart';
 import '../../api_service.dart';
+import '../../screens/all_characters_screen.dart';
+import '../widgets/anime_person_card.dart';
 
 class AnimeDetailScreen extends StatefulWidget {
   final Anime anime;
-
-  const AnimeDetailScreen({Key? key, required this.anime}) : super(key: key);
+  const AnimeDetailScreen({super.key, required this.anime});
 
   @override
   State<AnimeDetailScreen> createState() => _AnimeDetailScreenState();
 }
 
 class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
-  bool _descricaoExpandida = false;
-  late Future<List<AnimePerson>> _futureCharacters;
+  bool _expandedDesc = false;
+  late Future<List<AnimePerson>> _mainCharactersFuture;
+  late Future<List<AnimePerson>> _allCharactersFuture;
 
   @override
   void initState() {
     super.initState();
-    _futureCharacters = buscarPersonagens(int.parse(widget.anime.id));
+    final animeId = int.parse(widget.anime.id);
+    _mainCharactersFuture = ApiService.buscarPersonagens(animeId);
+    _allCharactersFuture = ApiService.buscarTodosPersonagens(animeId);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.cor1,
-      appBar: AppBar(
-        title: Text(widget.anime.nome, overflow: TextOverflow.ellipsis),
-        backgroundColor: AppColors.cor2,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // IMAGEM + INFO
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildImagemAnime(),
-                const SizedBox(width: 16),
-                Expanded(child: _buildInfoAnime()),
-              ],
-            ),
-            const SizedBox(height: 24),
-            const Divider(color: Colors.white24),
-            const SizedBox(height: 12),
-
-            // DESCRIÇÃO
-            _buildDescricao(),
-
-            const SizedBox(height: 24),
-            const Divider(color: Colors.white24),
-            const SizedBox(height: 12),
-
-            // PERSONAGENS
-            const Text(
-              "Personagens",
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 8),
-            _buildCharacterList(),
+      extendBodyBehindAppBar: true,
+      appBar: _buildAppBar(),
+      body: SafeArea(
+        child: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            _buildSliverSection(_buildHeader()),
+            _buildSliverSection(_buildMainCharacters()),
+            _buildSliverSection(_buildDescription()),
+            _buildSliverSection(_buildAllCharacters()),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildImagemAnime() {
-    return Stack(
-      children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: Image.network(
-            widget.anime.imagemUrl,
-            width: 150,
-            height: 220,
-            fit: BoxFit.cover,
-          ),
+  PreferredSizeWidget _buildAppBar() => AppBar(
+    elevation: 0,
+    backgroundColor: Colors.transparent,
+    flexibleSpace: _buildAppBarGradient(),
+    title: const Text(
+      'Detalhes do Anime',
+      style: TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 20,
+        color: Colors.white,
+      ),
+    ),
+    centerTitle: true,
+  );
+
+  Widget _buildAppBarGradient() => Container(
+    decoration: BoxDecoration(
+      gradient: LinearGradient(
+        colors: [AppColors.cor2],
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+      ),
+    ),
+  );
+
+  Widget _buildSliverSection(Widget child) => SliverToBoxAdapter(
+    child: Padding(padding: const EdgeInsets.all(16), child: child),
+  );
+
+  Widget _buildHeader() => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      _AnimeImage(widget.anime),
+      const SizedBox(width: 16),
+      Expanded(child: _AnimeBasicInfo(widget.anime)),
+    ],
+  );
+
+  Widget _buildMainCharacters() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const _SectionTitle('Personagens Principais'),
+      const SizedBox(height: 14),
+      SizedBox(
+        height: 140, // Ajustado para o novo tamanho do card
+        child: FutureBuilder<List<AnimePerson>>(
+          future: _mainCharactersFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError ||
+                !snapshot.hasData ||
+                snapshot.data!.isEmpty) {
+              return const Center(
+                child: Text(
+                  "Nenhum personagem disponível.",
+                  style: TextStyle(color: Colors.white70),
+                ),
+              );
+            }
+
+            final characters = snapshot.data!;
+            final itemCount = characters.length > 8 ? 8 : characters.length;
+
+            return ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: itemCount,
+              itemBuilder: (context, index) {
+                return AnimePersonCard(
+                  personAnime: characters[index],
+                  compactMode: true,
+                );
+              },
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+            );
+          },
         ),
-        Positioned(
-          bottom: 8,
-          right: 8,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.black54,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Row(
+      ),
+    ],
+  );
+
+  Widget _buildAllCharacters() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const _SectionTitle('Todos os Personagens'),
+      const SizedBox(height: 16),
+      SizedBox(
+        height: 180, // Ajustado para o novo tamanho do card
+        child: FutureBuilder<List<AnimePerson>>(
+          future: _allCharactersFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError ||
+                !snapshot.hasData ||
+                snapshot.data!.isEmpty) {
+              return const Center(
+                child: Text(
+                  "Nenhum personagem disponível.",
+                  style: TextStyle(color: Colors.white70),
+                ),
+              );
+            }
+
+            final characters = snapshot.data!;
+            final itemCount = characters.length > 8 ? 8 : characters.length;
+
+            return Column(
               children: [
-                const Icon(Icons.star, color: Colors.amber, size: 16),
-                const SizedBox(width: 4),
-                Text(
-                  widget.anime.nota,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
+                Expanded(
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: itemCount,
+                    itemBuilder: (context, index) {
+                      return AnimePersonCard(
+                        personAnime: characters[index],
+                        compactMode: true,
+                      );
+                    },
+                    separatorBuilder: (_, __) => const SizedBox(width: 12),
                   ),
                 ),
+                if (characters.length > 8)
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: TextButton(
+                      onPressed:
+                          () => _navigateToAllCharacters(context, characters),
+                      child: const Text(
+                        "Ver todos",
+                        style: TextStyle(color: Colors.amber),
+                      ),
+                    ),
+                  ),
               ],
+            );
+          },
+        ),
+      ),
+    ],
+  );
+
+  Widget _buildDescription() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const _SectionTitle('Sinopse'),
+      const SizedBox(height: 12),
+      _ExpandableDescription(
+        widget.anime.descricao,
+        _expandedDesc,
+        () => setState(() => _expandedDesc = !_expandedDesc),
+      ),
+    ],
+  );
+
+  void _navigateToAllCharacters(
+    BuildContext context,
+    List<AnimePerson> personAnimes,
+  ) {
+    if (personAnimes.isEmpty) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => AllCharactersScreen(listaPersonagens: personAnimes),
+      ),
+    );
+  }
+}
+
+class _AnimeImage extends StatelessWidget {
+  final Anime anime;
+  const _AnimeImage(this.anime);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 130,
+      height: 200,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: CachedNetworkImage(
+              imageUrl: anime.imagemUrl,
+              fit: BoxFit.cover,
+              placeholder: (_, __) => Container(color: Colors.grey[800]),
+              errorWidget:
+                  (_, __, ___) => Container(
+                    color: const Color.fromARGB(255, 71, 71, 71),
+                    child: const Icon(Icons.error, color: Colors.white),
+                  ),
             ),
           ),
-        ),
-      ],
+          Positioned(
+            bottom: 8,
+            right: 8,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.black87,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.star, color: Colors.amber, size: 16),
+                  const SizedBox(width: 4),
+                  Text(
+                    anime.nota,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
+}
 
-  Widget _buildInfoAnime() {
+class _AnimeBasicInfo extends StatelessWidget {
+  final Anime anime;
+  const _AnimeBasicInfo(this.anime);
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "#${widget.anime.rank}. ${widget.anime.nome}",
+          anime.nome,
           style: const TextStyle(
-            fontSize: 22,
+            fontSize: 24,
             fontWeight: FontWeight.bold,
             color: Colors.white,
+            height: 1.2,
           ),
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
         ),
         const SizedBox(height: 12),
-        _infoText("Tipo", widget.anime.tipo),
-        _infoText("Status", widget.anime.status),
-        _infoText("Episódios", widget.anime.episodios),
-        _infoText("Popularidade", widget.anime.popularidade),
+        _InfoRow('Estúdio', anime.estudio ?? 'N/A'),
+        _InfoRow('Episódios', anime.episodios),
+        _InfoRow('Status', _translateStatus(anime.status)),
+        _InfoRow('Lançamento', anime.ano ?? 'N/A'),
+        _InfoRow('Tipo', _translateType(anime.tipo)),
       ],
     );
   }
 
-  Widget _buildDescricao() {
+  String _translateStatus(String status) =>
+      {
+        'finished airing': 'Finalizado',
+        'currently airing': 'Em exibição',
+        'airing': 'Em exibição',
+        'finished': 'Finalizado',
+        'not_yet_aired': 'Não lançado',
+        'upcoming': 'Em breve',
+      }[status.toLowerCase()] ??
+      status;
+
+  String _translateType(String type) =>
+      {
+        'tv': 'Anime',
+        'movie': 'Filme',
+        'ova': 'OVA',
+        'ona': 'ONA',
+        'special': 'Especial',
+        'tv special': 'Especial de Anime',
+      }[type.toLowerCase()] ??
+      type;
+}
+
+class _InfoRow extends StatelessWidget {
+  final String label;
+  final String value;
+  const _InfoRow(this.label, this.value);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: '$label: ',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.8),
+                fontSize: 14,
+              ),
+            ),
+            TextSpan(
+              text: value,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SectionTitle extends StatelessWidget {
+  final String title;
+  const _SectionTitle(this.title);
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          height: 24,
+          width: 4,
+          decoration: BoxDecoration(
+            color: Colors.amber,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ExpandableDescription extends StatelessWidget {
+  final String description;
+  final bool isExpanded;
+  final VoidCallback onToggle;
+
+  const _ExpandableDescription(
+    this.description,
+    this.isExpanded,
+    this.onToggle,
+  );
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Descrição",
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          widget.anime.descricao,
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.white70,
-            height: 1.5,
-          ),
-          textAlign: TextAlign.justify,
-          maxLines: _descricaoExpandida ? null : 8,
-          overflow:
-              _descricaoExpandida
-                  ? TextOverflow.visible
-                  : TextOverflow.ellipsis,
+        AnimatedCrossFade(
+          firstChild: _buildCollapsedDesc(),
+          secondChild: _buildExpandedDesc(),
+          crossFadeState:
+              isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+          duration: const Duration(milliseconds: 300),
         ),
         TextButton(
-          onPressed: () {
-            setState(() {
-              _descricaoExpandida = !_descricaoExpandida;
-            });
-          },
+          onPressed: onToggle,
           child: Text(
-            _descricaoExpandida ? "Ler menos" : "Ler mais",
-            style: const TextStyle(color: Colors.amber),
+            isExpanded ? 'Mostrar menos' : 'Mostrar mais',
+            style: TextStyle(color: Colors.amber[700]),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildCharacterList() {
-    return SizedBox(
-      height: 180,
-      child: FutureBuilder<List<AnimePerson>>(
-        future: _futureCharacters,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Erro: \${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('Nenhum personagem encontrado'));
-          }
-          final allChars = snapshot.data!;
-          final mains =
-              allChars.where((c) => c.funcao.toLowerCase() == 'main').toList();
-          final others =
-              allChars.where((c) => c.funcao.toLowerCase() != 'main').toList();
-          final displayList = [...mains, ...others].take(10).toList();
+  Widget _buildCollapsedDesc() => Text(
+    description.isNotEmpty ? description : 'Descrição não disponível',
+    maxLines: 4,
+    overflow: TextOverflow.ellipsis,
+    style: const TextStyle(color: Colors.white70, height: 1.5),
+  );
 
-          return ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: displayList.length,
-            itemBuilder: (context, index) {
-              final personagem = displayList[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6.0),
-                child: AnimePersonCard(personAnime: personagem),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
-
-  Widget _infoText(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 4),
-      child: Text(
-        "$label: $value",
-        style: const TextStyle(fontSize: 16, color: Colors.white70),
-      ),
-    );
-  }
+  Widget _buildExpandedDesc() => Text(
+    description,
+    style: const TextStyle(color: Colors.white70, height: 1.5),
+  );
 }

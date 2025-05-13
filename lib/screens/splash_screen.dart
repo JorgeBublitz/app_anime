@@ -1,10 +1,9 @@
-// lib/screens/splash_screen.dart
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'home_screen.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import '../colors/app_colors.dart';
 import '../api_service.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
+import 'home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -20,39 +19,41 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _animar();
+    _iniciarAnimacoes();
     _carregarDados();
   }
 
-  void _animar() {
+  void _iniciarAnimacoes() {
     Future.delayed(const Duration(milliseconds: 100), () {
-      setState(() {
-        _opacity = 1.0;
-        _scale = 1.2;
-      });
+      if (mounted) {
+        setState(() {
+          _opacity = 1.0;
+          _scale = 1.2;
+        });
+      }
     });
 
     Future.delayed(const Duration(seconds: 1), () {
-      setState(() {
-        _mostrarCarregando = true;
-      });
+      if (mounted) {
+        setState(() {
+          _mostrarCarregando = true;
+        });
+      }
     });
   }
 
   Future<void> _carregarDados() async {
-    final conectado = await Connectivity().checkConnectivity();
-    if (conectado == ConnectivityResult.none) {
-      setState(() {
-        _erroCarregamento = true;
-        _mostrarCarregando = false;
-      });
+    final conectividade = await Connectivity().checkConnectivity();
+
+    if (conectividade == ConnectivityResult.none) {
+      _mostrarErro();
       return;
     }
 
     try {
-      final dados = await Future.wait([
-        topAnimes().timeout(const Duration(seconds: 10)),
-        topMangas().timeout(const Duration(seconds: 10)),
+      final resultados = await Future.wait([
+        ApiService.topAnimes().timeout(const Duration(seconds: 10)),
+        ApiService.topMangas().timeout(const Duration(seconds: 10)),
       ]);
 
       if (!mounted) return;
@@ -60,16 +61,23 @@ class _SplashScreenState extends State<SplashScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (_) => HomeScreen(animes: dados[0], mangas: dados[1]),
+          builder:
+              (_) => HomeScreen(animes: resultados[0], mangas: resultados[1]),
         ),
       );
-    } catch (_) {
-      if (mounted) {
-        setState(() {
-          _erroCarregamento = true;
-          _mostrarCarregando = false;
-        });
-      }
+    } on TimeoutException catch (_) {
+      _mostrarErro(mensagem: 'Tempo esgotado ao carregar dados.');
+    } catch (e) {
+      _mostrarErro(mensagem: 'Erro inesperado: $e');
+    }
+  }
+
+  void _mostrarErro({String mensagem = 'Sem conexão com a internet'}) {
+    if (mounted) {
+      setState(() {
+        _erroCarregamento = true;
+        _mostrarCarregando = false;
+      });
     }
   }
 
@@ -85,9 +93,9 @@ class _SplashScreenState extends State<SplashScreen> {
             tween: Tween(begin: 0.5, end: _scale),
             duration: const Duration(milliseconds: 800),
             curve: Curves.easeOutBack,
-            builder: (context, scale, child) {
-              return Transform.scale(scale: scale, child: child);
-            },
+            builder:
+                (context, scale, child) =>
+                    Transform.scale(scale: scale, child: child),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -123,7 +131,7 @@ class _SplashScreenState extends State<SplashScreen> {
       key: const ValueKey('erro'),
       children: [
         const Text(
-          'Sem conexão com a internet',
+          'Falha ao carregar os dados.',
           style: TextStyle(
             color: Colors.black,
             fontSize: 16,
