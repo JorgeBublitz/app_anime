@@ -26,5 +26,5 @@ Um aplicativo Flutter para explorar personagens de anime e seus dubladores usand
 
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/seu-usuario/app-dubladores-anime.git
-   cd app-dubladores-anime
+   git clone https://github.com/JorgeBublitz/app_anime.git
+   cd app_anime
