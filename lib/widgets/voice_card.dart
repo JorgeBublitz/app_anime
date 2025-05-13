@@ -1,3 +1,4 @@
+import 'package:app/models/voice.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../models/animePerson.dart';
@@ -5,12 +6,12 @@ import '../colors/app_colors.dart';
 import '../models/anime.dart';
 import '../screens/anime_person_detail_screen.dart';
 
-class AnimePersonCard extends StatelessWidget {
-  final AnimePerson personAnime;
+class VoiceCard extends StatelessWidget {
+  final Voice personAnime;
   final bool compactMode;
   final VoidCallback? onTap;
 
-  const AnimePersonCard({
+  const VoiceCard({
     super.key,
     required this.personAnime,
     this.compactMode = false,
@@ -20,21 +21,12 @@ class AnimePersonCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder:
-                (context) => AnimePersonDetailScreen(animePerson: personAnime),
-          ),
-        );
-      },
       child: Container(
         decoration: BoxDecoration(
           color: AppColors.cor3,
           borderRadius: BorderRadius.circular(8),
         ),
-        width: compactMode ? 100 : 120,
+        width: compactMode ? 120 : 130,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [_buildImage(), _buildName()],

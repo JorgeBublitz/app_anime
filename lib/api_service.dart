@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'models/animePerson.dart';
 import 'models/mangaPerson.dart';
+import 'models/voice.dart';
 
 class ApiService {
   static const _baseUrl = "https://api.jikan.moe/v4";
@@ -42,6 +43,19 @@ class ApiService {
         .map((json) => AnimePerson.fromJson(json))
         .where((p) => p.funcao.toLowerCase().contains('main'))
         .toList();
+  }
+
+  static Future<List<Voice>> buscarVoiceActors(int characterId) async {
+    final response = await http.get(
+      Uri.parse("$_baseUrl/characters/$characterId/voices"),
+    );
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      return (jsonData['data'] as List)
+          .map((json) => Voice.fromJson(json))
+          .toList();
+    }
+    throw Exception("Failed to load voice actors");
   }
 
   static Future<List<AnimePerson>> buscarTodosPersonagens(int animeId) async {

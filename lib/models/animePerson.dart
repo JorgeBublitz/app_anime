@@ -1,4 +1,5 @@
 class AnimePerson {
+  final String id;
   final String nome;
   final String imagemUrl;
   final String funcao;
@@ -7,8 +8,10 @@ class AnimePerson {
   final String? idade;
   final String? genero;
   final String? favoritos;
+  final String? voiceActor;
 
   AnimePerson({
+    required this.id,
     required this.nome,
     required this.imagemUrl,
     required this.funcao,
@@ -17,6 +20,7 @@ class AnimePerson {
     this.idade,
     this.genero,
     this.favoritos,
+    this.voiceActor,
   });
 
   factory AnimePerson.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,7 @@ class AnimePerson {
     String? biografiaLimpa = _limparBiografia(bioOriginal);
 
     return AnimePerson(
+      id: json['character']?['mal_id']?.toString() ?? '',
       nome: json['character']?['name'] ?? '',
       imagemUrl: json['character']?['images']?['jpg']?['image_url'] ?? '',
       funcao: json['role'] ?? '',
@@ -34,6 +39,7 @@ class AnimePerson {
       idade: idade,
       genero: json['character']?['gender'],
       favoritos: json['character']?['favorites']?.toString(),
+      voiceActor: json['character']?['voice_actors']?[0]?['person']?['name'],
     );
   }
 
