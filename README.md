@@ -1,16 +1,30 @@
-# app
+# Aplicativo de Personagens de Anime e Dubladores
 
-A new Flutter project.
+[![Flutter](https://img.shields.io/badge/Flutter-%2302569B.svg?style=for-the-badge&logo=Flutter&logoColor=white)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/dart-%230175C2.svg?style=for-the-badge&logo=dart&logoColor=white)](https://dart.dev)
 
-## Getting Started
+Um aplicativo Flutter para explorar personagens de anime e seus dubladores usando a Jikan API.
 
-This project is a starting point for a Flutter application.
+## Funcionalidades
 
-A few resources to get you started if this is your first Flutter project:
+- 🎭 Detalhes de personagens de anime com:
+  - Imagens
+  - Biografia
+  - Informações do personagem
+  - Lista de dubladores
+- 🌐 Informações de dublagem em múltiplos idiomas
+- 🖼️ Cache de imagens para rolagem suave
+- 📱 Interface responsiva para dispositivos móveis
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Dependências
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- [Flutter](https://flutter.dev)
+- [cached_network_image](https://pub.dev/packages/cached_network_image)
+- [http](https://pub.dev/packages/http)
+
+## Instalação
+
+1. **Clone o repositório**
+   ```bash
+   git clone https://github.com/seu-usuario/app-dubladores-anime.git
+   cd app-dubladores-anime
