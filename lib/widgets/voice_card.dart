@@ -1,10 +1,7 @@
 import 'package:app/models/voice.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../models/animePerson.dart';
 import '../colors/app_colors.dart';
-import '../models/anime.dart';
-import '../screens/anime_person_detail_screen.dart';
 
 class VoiceCard extends StatelessWidget {
   final Voice personAnime;

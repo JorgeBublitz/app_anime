@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'models/animePerson.dart';
-import 'models/mangaPerson.dart';
+import 'models/anime/animePerson.dart';
+import 'models/manga/mangaPerson.dart';
 import 'models/voice.dart';
 
 class ApiService {

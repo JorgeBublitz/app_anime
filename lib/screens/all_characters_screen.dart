@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../models/animePerson.dart';
-import '../widgets/anime_person_card.dart';
+import '../models/anime/animePerson.dart';
+import '../widgets/anime/anime_person_card.dart';
 import '../colors/app_colors.dart';
 
 class AllCharactersScreen extends StatefulWidget {

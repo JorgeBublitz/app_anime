@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../models/animePerson.dart';
+import '../models/anime/animePerson.dart';
 import '../../colors/app_colors.dart';
-import '../../screens/all_characters_screen.dart';
-import '../widgets/anime_person_card.dart';
 import '../widgets/voice_card.dart';
 import 'package:app/models/voice.dart';
 import '../api_service.dart';
@@ -130,17 +128,6 @@ class _AnimePersonDetailScreenState extends State<AnimePersonDetailScreen> {
     ],
   );
 
-  void _navigateToAllCharacters(
-    BuildContext context,
-    List<AnimePerson> characters,
-  ) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AllCharactersScreen(listaPersonagens: characters),
-      ),
-    );
-  }
 }
 
 class _AnimePersonImage extends StatelessWidget {
@@ -186,7 +173,7 @@ class _AnimePersonImage extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    animePerson.funcao ?? 'Role',
+                    animePerson.funcao,
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -218,7 +205,7 @@ class _InfoRow extends StatelessWidget {
             TextSpan(
               text: '$label: ',
               style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
+                color: Colors.white,
                 fontSize: 14,
               ),
             ),
