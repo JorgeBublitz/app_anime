@@ -9,7 +9,6 @@ class Manga {
   final String? titleEnglish;
   final String? titleJapanese;
   final List<String> titleSynonyms;
-  final String? synopsis;
   final String type;
   final int? chapters;
   final int? volumes;
@@ -21,8 +20,10 @@ class Manga {
   final int popularity;
   final int members;
   final int favorites;
+  final String? synopsis;
+  final String? background;
 
-  const Manga({
+  Manga({
     required this.malId,
     required this.url,
     required this.images,
@@ -30,8 +31,7 @@ class Manga {
     required this.author,
     this.titleEnglish,
     this.titleJapanese,
-    this.titleSynonyms = const [],
-    this.synopsis,
+    required this.titleSynonyms,
     required this.type,
     this.chapters,
     this.volumes,
@@ -43,32 +43,33 @@ class Manga {
     required this.popularity,
     required this.members,
     required this.favorites,
+    this.synopsis,
+    this.background,
   });
 
   factory Manga.fromJson(Map<String, dynamic> json) {
     return Manga(
-      malId: json['mal_id'] as int,
-      url: json['url'] as String,
-      images: Images.fromJson(json['images'] as Map<String, dynamic>),
-      title: json['title'] as String,
-      author: json['author'] as String,
-      titleEnglish: json['title_english'] as String?,
-      titleJapanese: json['title_japanese'] as String?,
-      titleSynonyms: List<String>.from(
-        json['title_synonyms'] as List<dynamic>? ?? [],
-      ),
-      synopsis: json['synopsis'] as String?,
-      type: json['type'] as String,
-      chapters: json['chapters'] as int?,
-      volumes: json['volumes'] as int?,
-      status: json['status'] as String,
-      publishing: json['publishing'] as bool,
-      score: (json['score'] as num).toDouble(),
-      scoredBy: json['scored_by'] as int,
-      rank: json['rank'] as int,
-      popularity: json['popularity'] as int,
-      members: json['members'] as int,
-      favorites: json['favorites'] as int,
+      malId: json['mal_id'] ?? 0,
+      url: json['url'] ?? '',
+      images: Images.fromJson(json['images'] ?? {}),
+      title: json['title'] ?? '',
+      author: json['author'] ?? '',
+      titleEnglish: json['title_english'],
+      titleJapanese: json['title_japanese'],
+      titleSynonyms: List<String>.from(json['title_synonyms'] ?? []),
+      type: json['type'] ?? '',
+      chapters: json['chapters'],
+      volumes: json['volumes'],
+      status: json['status'] ?? '',
+      publishing: json['publishing'] ?? false,
+      score: (json['score'] ?? 0).toDouble(),
+      scoredBy: json['scored_by'] ?? 0,
+      rank: json['rank'] ?? 0,
+      popularity: json['popularity'] ?? 0,
+      members: json['members'] ?? 0,
+      favorites: json['favorites'] ?? 0,
+      synopsis: json['synopsis'],
+      background: json['background'],
     );
   }
 
@@ -82,7 +83,6 @@ class Manga {
       if (titleEnglish != null) 'title_english': titleEnglish,
       if (titleJapanese != null) 'title_japanese': titleJapanese,
       'title_synonyms': titleSynonyms,
-      if (synopsis != null) 'synopsis': synopsis,
       'type': type,
       if (chapters != null) 'chapters': chapters,
       if (volumes != null) 'volumes': volumes,
@@ -94,11 +94,8 @@ class Manga {
       'popularity': popularity,
       'members': members,
       'favorites': favorites,
+      if (synopsis != null) 'synopsis': synopsis,
+      if (background != null) 'background': background,
     };
-  }
-
-  @override
-  String toString() {
-    return 'Manga(malId: $malId, title: $title, type: $type, status: $status, score: $score)';
   }
 }

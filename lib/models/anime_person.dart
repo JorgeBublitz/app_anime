@@ -1,11 +1,12 @@
 import 'character.dart';
-import 'voice.dart';
+import 'voiceActor.dart'; // import correto
+// remova o import de 'voice.dart' se não estiver usando
 
 class AnimePerson {
   final Character character;
   final String role;
   final int favorites;
-  final List<Voice> voiceActors;
+  final List<VoiceActor> voiceActors; // agora é VoiceActor
 
   AnimePerson({
     required this.character,
@@ -16,25 +17,20 @@ class AnimePerson {
 
   factory AnimePerson.fromJson(Map<String, dynamic> json) {
     return AnimePerson(
-      character: Character.fromJson(json['character'] ?? {}),
-      role: json['role'] ?? '',
-      favorites: json['favorites'] ?? 0,
+      character: Character.fromJson(json['character'] as Map<String, dynamic>),
+      role: json['role'] as String? ?? '',
+      favorites: json['favorites'] as int? ?? 0,
       voiceActors:
-          (json['voice_actors'] as List? ?? [])
-              .map((voice) => Voice.fromJson(voice))
+          (json['voice_actors'] as List<dynamic>? ?? [])
+              .map((e) => VoiceActor.fromJson(e as Map<String, dynamic>))
               .toList(),
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'character': character.toJson(),
-      'role': role,
-      'favorites': favorites,
-      'voice_actors': voiceActors.map((voice) => voice.toJson()).toList(),
-    };
-  }
-
-  // Getter para obter a função do personagem (Main, Supporting, etc.)
-  String get funcao => role;
+  Map<String, dynamic> toJson() => {
+    'character': character.toJson(),
+    'role': role,
+    'favorites': favorites,
+    'voice_actors': voiceActors.map((va) => va.toJson()).toList(),
+  };
 }

@@ -1,5 +1,4 @@
 import 'character.dart';
-import 'voice.dart';
 
 class MangaPerson {
   final Character character;

@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'models/anime/anime.dart';
-import 'models/manga/manga.dart';
-import 'models/anime/animePerson.dart';
-import 'models/manga/mangaPerson.dart';
-import 'models/voices/voice.dart';
+import 'models/anime.dart';
+import 'models/manga.dart';
+import 'models/anime_person.dart';
+import 'models/manga_person.dart';
+import 'models/voice.dart';
 import 'models/character.dart';
 
 class ApiService {

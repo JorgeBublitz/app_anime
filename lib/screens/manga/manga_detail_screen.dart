@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../colors/app_colors.dart';
-import '../../models/manga/manga.dart';
-import '../../models/manga/mangaPerson.dart';
-import '../../widgets/card/mangaCard/manga_person_card.dart';
+import '../../models/manga.dart';
+import '../../models/manga_person.dart';
+import '../../widgets/manga_person_card.dart';
 import '../../api_service.dart';
 
 class MangaDetailScreen extends StatefulWidget {

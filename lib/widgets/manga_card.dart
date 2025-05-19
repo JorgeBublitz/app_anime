@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../models/manga/manga.dart';
-import '../../../colors/app_colors.dart';
-import '../../../screens/manga/manga_detail_screen.dart';
+import '../models/manga.dart';
+import '../colors/app_colors.dart';
+import '../screens/manga/manga_detail_screen.dart';
 
 class MangaCard extends StatelessWidget {
   final Manga manga;

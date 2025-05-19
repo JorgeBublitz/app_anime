@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../models/anime/anime.dart';
-import '../../models/anime/animePerson.dart';
+import '../../models/anime.dart';
+import '../../models/anime_person.dart';
 import '../../../colors/app_colors.dart';
 import '../../../api_service.dart';
 import '../../../screens/all_characters_screen.dart';
-import '../../widgets/card/animeCard/anime_person_card.dart';
+import '../../widgets/anime_person_card.dart';
 
 class AnimeDetailScreen extends StatefulWidget {
   final Anime anime;

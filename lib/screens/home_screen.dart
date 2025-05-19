@@ -1,9 +1,9 @@
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
-import '../models/anime/anime.dart';
-import '../models/manga/manga.dart';
-import '../widgets/card/animeCard/anime_card.dart';
-import '../widgets/card/mangaCard/manga_card.dart';
+import '../models/anime.dart';
+import '../models/manga.dart';
+import '../widgets/anime_card.dart';
+import '../widgets/manga_card.dart';
 import '../colors/app_colors.dart';
 
 class HomeScreen extends StatelessWidget {

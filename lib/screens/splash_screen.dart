@@ -4,8 +4,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import '../colors/app_colors.dart';
 import '../api_service.dart';
 import 'home_screen.dart';
-import 'package:app/models/anime/anime.dart';
-import 'package:app/models/manga/manga.dart';
+import 'package:app/models/anime.dart';
+import 'package:app/models/manga.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:app/models/voices/voice.dart';
-import '../../../colors/app_colors.dart';
+import 'package:app/models/voice.dart';
+import '../colors/app_colors.dart';
 
 class VoiceCard extends StatelessWidget {
   final Voice voice;
