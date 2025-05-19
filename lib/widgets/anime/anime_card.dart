@@ -1,18 +1,12 @@
+import 'package:app/screens/anime_detail_screen.dart';
 import 'package:flutter/material.dart';
-<<<<<<<< HEAD:lib/widgets/card/mangaCard/manga_card.dart
-import '../../../models/manga/manga.dart';
-import '../../../colors/app_colors.dart';
-import '../../../screens/manga/manga_detail_screen.dart';
-========
-import '../../models/manga/manga.dart';
+import '../../models/anime/anime.dart';
 import '../../colors/app_colors.dart';
-import '../../screens/manga_detail_screen.dart';
->>>>>>>> 55821e48833561bb408d3299da1d9a295d234951:lib/widgets/manga/manga_card.dart
 
-class MangaCard extends StatelessWidget {
-  final Manga manga;
+class AnimeCard extends StatelessWidget {
+  final Anime anime;
 
-  MangaCard({required this.manga});
+  AnimeCard({required this.anime});
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +15,7 @@ class MangaCard extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => MangaDetailScreen(manga: manga),
+            builder: (context) => AnimeDetailScreen(anime: anime),
           ),
         );
       },
@@ -38,21 +32,21 @@ class MangaCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
               child: Image.network(
-                manga.images.jpg.imageUrl,
+                anime.imagemUrl,
                 width: double.infinity,
                 height: 90, // Menor altura para a imagem
                 fit: BoxFit.cover,
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(5.0), // Padding mais enxuto
+              padding: const EdgeInsets.all(6.0), // Padding mais enxuto
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
                       Text(
-                        "#${manga.rank}. ",
+                        "#${anime.rank}. ",
                         style: TextStyle(
                           fontSize: 13, // Fonte menor
                           fontWeight: FontWeight.bold,
@@ -61,7 +55,7 @@ class MangaCard extends StatelessWidget {
                       ),
                       Expanded(
                         child: Text(
-                          manga.title,
+                          anime.nome,
                           style: TextStyle(
                             fontSize: 13, // Fonte menor
                             fontWeight: FontWeight.bold,
@@ -83,7 +77,7 @@ class MangaCard extends StatelessWidget {
                       ),
                       SizedBox(width: 4),
                       Text(
-                        manga.score.toString(),
+                        anime.nota,
                         style: TextStyle(
                           fontSize: 14, // Fonte menor para a nota
                           color: Colors.amber,
