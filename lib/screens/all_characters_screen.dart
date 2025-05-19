@@ -1,46 +1,28 @@
 import 'package:flutter/material.dart';
-import '../models/animePerson.dart';
-import '../widgets/anime_person_card.dart';
+import '../models/anime/animePerson.dart';
+import '../widgets/card/animeCard/anime_person_card.dart';
 import '../colors/app_colors.dart';
 
 class AllCharactersScreen extends StatefulWidget {
   final List<AnimePerson> listaPersonagens;
-  final bool is3xNLayout;
 
-  const AllCharactersScreen({
-    super.key,
-    required this.listaPersonagens,
-    this.is3xNLayout = false,
-  });
+  const AllCharactersScreen({Key? key, required this.listaPersonagens})
+    : super(key: key);
 
   @override
-  State<AllCharactersScreen> createState() => _AllCharactersScreenState();
+  _AllCharactersScreenState createState() => _AllCharactersScreenState();
 }
 
 class _AllCharactersScreenState extends State<AllCharactersScreen> {
-  late TextEditingController _searchController;
-  List<AnimePerson> _filteredList = [];
+  String _query = '';
 
-  @override
-  void initState() {
-    super.initState();
-    _searchController = TextEditingController();
-    _filteredList = widget.listaPersonagens;
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  void _filterCharacters(String query) {
-    setState(() {
-      _filteredList =
-          widget.listaPersonagens.where((person) {
-            return person.nome.toLowerCase().contains(query.toLowerCase());
-          }).toList();
-    });
+  List<AnimePerson> get _filteredList {
+    if (_query.isEmpty) return widget.listaPersonagens;
+    return widget.listaPersonagens
+        .where(
+          (p) => p.character.name.toLowerCase().contains(_query.toLowerCase()),
+        )
+        .toList();
   }
 
   @override
@@ -48,72 +30,72 @@ class _AllCharactersScreenState extends State<AllCharactersScreen> {
     return Scaffold(
       backgroundColor: AppColors.cor1,
       appBar: AppBar(
-        title: const Text("Todos os Personagens"),
+        title: const Text('Personagens'),
         backgroundColor: AppColors.cor2,
+        centerTitle: true,
+        elevation: 1,
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: TextField(
-              controller: _searchController,
-              onChanged: _filterCharacters,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white.withOpacity(0.2),
-                hintText: 'Pesquisar personagem...',
-                hintStyle: const TextStyle(color: Colors.white54),
-                prefixIcon: const Icon(Icons.search, color: Colors.amber),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  borderSide: BorderSide.none,
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: TextField(
+                onChanged: (v) => setState(() => _query = v),
+                decoration: InputDecoration(
+                  hintText: 'Pesquisar...',
+                  filled: true,
+                  fillColor: AppColors.cor2,
+                  prefixIcon: const Icon(Icons.search, color: Colors.white70),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
+                  ),
+                  hintStyle: const TextStyle(color: Colors.white54),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                style: const TextStyle(color: Colors.white),
               ),
-              style: const TextStyle(color: Colors.white),
             ),
-          ),
-          Expanded(
-            child:
-                _filteredList.isEmpty
-                    ? const Center(
-                      child: Text(
-                        "Nenhum personagem encontrado.",
-                        style: TextStyle(color: Colors.white70, fontSize: 18),
-                      ),
-                    )
-                    : Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: GridView.builder(
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: _calculateColumnCount(context),
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          childAspectRatio: 0.65,
-                          mainAxisExtent: 140,
+            Expanded(
+              child:
+                  _filteredList.isEmpty
+                      ? const Center(
+                        child: Text(
+                          'Nenhum personagem encontrado.',
+                          style: TextStyle(color: Colors.white54),
                         ),
-                        itemCount: _filteredList.length,
-                        itemBuilder:
-                            (context, index) => AnimePersonCard(
-                              personAnime: _filteredList[index],
-                              compactMode: !widget.is3xNLayout,
-                            ),
+                      )
+                      : Padding(
+                        padding: EdgeInsets.only(
+                          left: 12,
+                          right: 12,
+                          bottom: MediaQuery.of(context).padding.bottom + 12,
+                        ),
+                        child: GridView.builder(
+                          physics: const BouncingScrollPhysics(),
+                          cacheExtent: 500,
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                crossAxisSpacing: 12,
+                                mainAxisSpacing: 12,
+                                childAspectRatio: 0.7,
+                              ),
+                          itemCount: _filteredList.length,
+                          itemBuilder: (context, index) {
+                            final person = _filteredList[index];
+                            return AnimePersonCard(
+                              personAnime: person,
+                              compactMode: false,
+                            );
+                          },
+                        ),
                       ),
-                    ),
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
-  }
-
-  int _calculateColumnCount(BuildContext context) {
-    if (widget.is3xNLayout) {
-      final screenWidth = MediaQuery.of(context).size.width;
-      if (screenWidth > 800) return 3;
-      if (screenWidth > 600) return 3;
-      if (screenWidth > 300) return 2;
-      return 1;
-    }
-    return 3;
   }
 }

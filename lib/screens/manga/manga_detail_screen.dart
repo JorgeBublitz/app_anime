@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../colors/app_colors.dart';
-import '../../models/manga.dart';
-import '../../models/mangaPerson.dart';
-import '../widgets/manga_person_card.dart';
-import '../api_service.dart';
+import '../../../colors/app_colors.dart';
+import '../../models/manga/manga.dart';
+import '../../models/manga/mangaPerson.dart';
+import '../../widgets/card/mangaCard/manga_person_card.dart';
+import '../../api_service.dart';
 
 class MangaDetailScreen extends StatefulWidget {
   final Manga manga;
@@ -21,7 +21,7 @@ class _AnimeDetailScreenState extends State<MangaDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _futureCharacters = ApiService.buscarPersonagensM(int.parse(widget.manga.id));
+    _futureCharacters = ApiService.buscarPersonagensM(widget.manga.malId);
   }
 
   @override
@@ -30,7 +30,7 @@ class _AnimeDetailScreenState extends State<MangaDetailScreen> {
       backgroundColor: AppColors.cor1,
       appBar: AppBar(
         title: Text(
-          widget.manga.nome,
+          widget.manga.title,
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
         ),
@@ -51,7 +51,7 @@ class _AnimeDetailScreenState extends State<MangaDetailScreen> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12),
                       child: Image.network(
-                        widget.manga.imagemUrl,
+                        widget.manga.images.jpg.imageUrl,
                         width: 150,
                         height: 220,
                         fit: BoxFit.cover,
@@ -78,7 +78,7 @@ class _AnimeDetailScreenState extends State<MangaDetailScreen> {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              widget.manga.nota,
+                              widget.manga.score.toString(),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -97,7 +97,7 @@ class _AnimeDetailScreenState extends State<MangaDetailScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "#${widget.manga.rank}. ${widget.manga.nome}",
+                        "#${widget.manga.rank}. ${widget.manga.title}",
                         style: const TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
@@ -107,7 +107,7 @@ class _AnimeDetailScreenState extends State<MangaDetailScreen> {
                         maxLines: 1,
                       ),
                       Text(
-                        widget.manga.autor ?? 'Autor desconhecido',
+                        widget.manga.author,
                         style: const TextStyle(
                           fontSize: 16,
                           color: Colors.white60,
@@ -115,13 +115,13 @@ class _AnimeDetailScreenState extends State<MangaDetailScreen> {
                       ),
 
                       const SizedBox(height: 12),
-                      _infoText("Tipo", widget.manga.tipo ?? '-'),
-                      _infoText("Status", widget.manga.status ?? '-'),
-                      _infoText("Volumes", widget.manga.volumes ?? '-'),
-                      _infoText("Capítulos", widget.manga.capitulos ?? '-'),
+                      _infoText("Tipo", widget.manga.type),
+                      _infoText("Status", widget.manga.status),
+                      _infoText("Volumes", widget.manga.volumes.toString()),
+                      _infoText("Capítulos", widget.manga.chapters.toString()),
                       _infoText(
                         "Popularidade",
-                        widget.manga.popularidade ?? '-',
+                        widget.manga.popularity.toString(),
                       ),
                     ],
                   ),
@@ -144,7 +144,7 @@ class _AnimeDetailScreenState extends State<MangaDetailScreen> {
             ),
             const SizedBox(height: 8),
             Text(
-              widget.manga.sinopse ?? 'Sem descrição disponível.',
+              widget.manga.synopsis ?? 'Sem descrição disponível.',
               style: const TextStyle(
                 fontSize: 16,
                 color: Colors.white70,

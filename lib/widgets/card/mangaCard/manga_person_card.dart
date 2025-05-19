@@ -1,7 +1,7 @@
 // anime_person_card.dart
 import 'package:flutter/material.dart';
-import '../models/mangaPerson.dart';
-import '../colors/app_colors.dart';
+import '../../../models/manga/mangaPerson.dart';
+import '../../../colors/app_colors.dart';
 
 class MangaPersonCard extends StatelessWidget {
   final MangaPerson personManga;
@@ -30,7 +30,7 @@ class MangaPersonCard extends StatelessWidget {
                 top: Radius.circular(8),
               ),
               child: Image.network(
-                personManga.imagemUrl,
+                personManga.character.images.jpg.imageUrl,
                 width: double.infinity,
                 height: 135,
                 fit: BoxFit.cover,
@@ -42,7 +42,7 @@ class MangaPersonCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    personManga.nome,
+                    personManga.character.name,
                     style: const TextStyle(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,

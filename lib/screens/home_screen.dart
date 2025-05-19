@@ -1,27 +1,26 @@
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
-import '../models/anime.dart';
-import '../models/manga.dart';
-import '../widgets/anime_card.dart';
-import '../widgets/manga_card.dart';
+import '../models/anime/anime.dart';
+import '../models/manga/manga.dart';
+import '../widgets/card/animeCard/anime_card.dart';
+import '../widgets/card/mangaCard/manga_card.dart';
 import '../colors/app_colors.dart';
 
 class HomeScreen extends StatelessWidget {
-  final List<dynamic> animes;
-  final List<dynamic> mangas;
+  final List<Anime> animes;
+  final List<Manga> mangas;
 
   const HomeScreen({Key? key, required this.animes, required this.mangas})
     : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // Ordena os animes e mangas pelo rank (assumindo que "rank" é um campo numérico)
-    animes.sort(
-      (a, b) => a['rank'].compareTo(b['rank']),
-    ); // Ordenando os animes por rank
-    mangas.sort(
-      (a, b) => a['rank'].compareTo(b['rank']),
-    ); // Ordenando os mangas por rank
+    // Ordena os animes e mangas pelo rank
+    final sortedAnimes = List<Anime>.from(animes)
+      ..sort((a, b) => a.rank.compareTo(b.rank));
+
+    final sortedMangas = List<Manga>.from(mangas)
+      ..sort((a, b) => a.rank.compareTo(b.rank));
 
     return Scaffold(
       backgroundColor: AppColors.cor1,
@@ -60,7 +59,7 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              _buildHorizontalList(animes, isAnime: true),
+              _buildHorizontalList(sortedAnimes, isAnime: true),
               const SizedBox(height: 32),
               Row(
                 children: [
@@ -70,7 +69,7 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              _buildHorizontalList(mangas, isAnime: false),
+              _buildHorizontalList(sortedMangas, isAnime: false),
             ],
           ),
         ),
@@ -116,9 +115,7 @@ class HomeScreen extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemCount: lista.length,
         itemBuilder: (context, index) {
-          final itemMap = lista[index] as Map<String, dynamic>;
-          final item =
-              isAnime ? Anime.fromJson(itemMap) : Manga.fromJson(itemMap);
+          final item = lista[index];
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6.0),

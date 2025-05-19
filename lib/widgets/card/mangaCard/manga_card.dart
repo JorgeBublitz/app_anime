@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/manga.dart';
-import '../colors/app_colors.dart';
-import '../screens/manga_detail_screen.dart';
+import '../../../models/manga/manga.dart';
+import '../../../colors/app_colors.dart';
+import '../../../screens/manga/manga_detail_screen.dart';
 
 class MangaCard extends StatelessWidget {
   final Manga manga;
@@ -32,7 +32,7 @@ class MangaCard extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
               child: Image.network(
-                manga.imagemUrl,
+                manga.images.jpg.imageUrl,
                 width: double.infinity,
                 height: 90, // Menor altura para a imagem
                 fit: BoxFit.cover,
@@ -55,7 +55,7 @@ class MangaCard extends StatelessWidget {
                       ),
                       Expanded(
                         child: Text(
-                          manga.nome,
+                          manga.title,
                           style: TextStyle(
                             fontSize: 13, // Fonte menor
                             fontWeight: FontWeight.bold,
@@ -77,7 +77,7 @@ class MangaCard extends StatelessWidget {
                       ),
                       SizedBox(width: 4),
                       Text(
-                        manga.nota,
+                        manga.score.toString(),
                         style: TextStyle(
                           fontSize: 14, // Fonte menor para a nota
                           color: Colors.amber,

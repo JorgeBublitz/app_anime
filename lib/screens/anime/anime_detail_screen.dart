@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../models/anime.dart';
-import '../../models/animePerson.dart';
-import '../../colors/app_colors.dart';
-import '../../api_service.dart';
-import '../../screens/all_characters_screen.dart';
-import '../widgets/anime_person_card.dart';
+import '../../models/anime/anime.dart';
+import '../../models/anime/animePerson.dart';
+import '../../../colors/app_colors.dart';
+import '../../../api_service.dart';
+import '../../../screens/all_characters_screen.dart';
+import '../../widgets/card/animeCard/anime_person_card.dart';
 
 class AnimeDetailScreen extends StatefulWidget {
   final Anime anime;
@@ -23,7 +23,7 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
   @override
   void initState() {
     super.initState();
-    final animeId = int.parse(widget.anime.id);
+    final animeId = widget.anime.malId;
     _mainCharactersFuture = ApiService.buscarPersonagens(animeId);
     _allCharactersFuture = ApiService.buscarTodosPersonagens(animeId);
   }
@@ -134,9 +134,9 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       const _SectionTitle('Todos os Personagens'),
-      const SizedBox(height: 16),
+      const SizedBox(height: 14),
       SizedBox(
-        height: 180, // Ajustado para o novo tamanho do card
+        height: 190, // Ajustado para o novo tamanho do card
         child: FutureBuilder<List<AnimePerson>>(
           future: _allCharactersFuture,
           builder: (context, snapshot) {
@@ -195,10 +195,10 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
   Widget _buildDescription() => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      const _SectionTitle('Sinopse'),
+      _SectionTitle('Sinopse'),
       const SizedBox(height: 12),
       _ExpandableDescription(
-        widget.anime.descricao,
+        widget.anime.synopsis ?? 'Sinopse não disponível.',
         _expandedDesc,
         () => setState(() => _expandedDesc = !_expandedDesc),
       ),
@@ -235,7 +235,7 @@ class _AnimeImage extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: CachedNetworkImage(
-              imageUrl: anime.imagemUrl,
+              imageUrl: anime.images.jpg.imageUrl,
               fit: BoxFit.cover,
               placeholder: (_, __) => Container(color: Colors.grey[800]),
               errorWidget:
@@ -246,8 +246,8 @@ class _AnimeImage extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: 8,
-            right: 8,
+            bottom: 20,
+            right: 5,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
@@ -259,7 +259,7 @@ class _AnimeImage extends StatelessWidget {
                   const Icon(Icons.star, color: Colors.amber, size: 16),
                   const SizedBox(width: 4),
                   Text(
-                    anime.nota,
+                    anime.score.toString(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -286,7 +286,7 @@ class _AnimeBasicInfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          anime.nome,
+          anime.title,
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -295,14 +295,24 @@ class _AnimeBasicInfo extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        _InfoRow('Estúdio', anime.estudio ?? 'N/A'),
-        _InfoRow('Episódios', anime.episodios),
+        _InfoRow('Episódios', anime.episodes.toString()),
+        _InfoRow('Tipo', _translateType(anime.type)),
+        _InfoRow('Lançamento', anime.year.toString()),
+        _InfoRow('Temporada', _translateSeason(anime.season ?? 'N/A')),
         _InfoRow('Status', _translateStatus(anime.status)),
-        _InfoRow('Lançamento', anime.ano ?? 'N/A'),
-        _InfoRow('Tipo', _translateType(anime.tipo)),
       ],
     );
   }
+
+  String _translateSeason(String? season) =>
+      {
+        'winter': 'Inverno',
+        'spring': 'Primavera',
+        'summer': 'Verao',
+        'fall': 'Outono',
+      }[season?.toLowerCase()] ??
+      season ??
+      'N/A';
 
   String _translateStatus(String status) =>
       {
@@ -341,10 +351,7 @@ class _InfoRow extends StatelessWidget {
           children: [
             TextSpan(
               text: '$label: ',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.8),
-                fontSize: 14,
-              ),
+              style: TextStyle(color: Colors.white, fontSize: 14),
             ),
             TextSpan(
               text: value,
