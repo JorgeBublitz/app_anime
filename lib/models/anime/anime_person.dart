@@ -1,5 +1,5 @@
 import '../character.dart';
-import '../voices/voiceActor.dart'; // import correto
+import '../dublagem/voice_actor.dart'; // import correto
 // remova o import de 'voice.dart' se não estiver usando
 
 class AnimePerson {

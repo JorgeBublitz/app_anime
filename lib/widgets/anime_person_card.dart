@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../../../models/anime/animePerson.dart';
-import '../../../colors/app_colors.dart';
-import '../../../screens/anime/anime_person_detail_screen.dart';
+import '../models/anime/anime_person.dart';
+import '../colors/app_colors.dart';
+import '../screens/anime_person_detail_screen.dart';
 
 class AnimePersonCard extends StatelessWidget {
   final AnimePerson personAnime;

@@ -1,12 +1,7 @@
 // anime_person_card.dart
 import 'package:flutter/material.dart';
-<<<<<<<< HEAD:lib/widgets/card/mangaCard/manga_person_card.dart
-import '../../../models/manga/mangaPerson.dart';
-import '../../../colors/app_colors.dart';
-========
-import '../../models/manga/mangaPerson.dart';
-import '../../colors/app_colors.dart';
->>>>>>>> 55821e48833561bb408d3299da1d9a295d234951:lib/widgets/manga/manga_person_card.dart
+import '../models/manga/manga_person.dart';
+import '../colors/app_colors.dart';
 
 class MangaPersonCard extends StatelessWidget {
   final MangaPerson personManga;

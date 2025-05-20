@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../../models/anime/animePerson.dart';
-import '../../../colors/app_colors.dart';
-import '../../widgets/card/voiceCard/voice_card.dart';
-import 'package:app/models/voices/voice.dart';
-import '../../api_service.dart';
-import '../../../models/character.dart';
+import '../models/anime/anime_person.dart';
+import '../../colors/app_colors.dart';
+import '../widgets/voice_card.dart';
+import 'package:app/models/dublagem/voice.dart';
+import '../api_service.dart';
+import '../../models/character.dart';
 
 class AnimePersonDetailScreen extends StatefulWidget {
   final AnimePerson animePerson;
+
   const AnimePersonDetailScreen({super.key, required this.animePerson});
 
   @override

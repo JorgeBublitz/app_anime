@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../../colors/app_colors.dart';
-import '../../models/manga/manga.dart';
-import '../../models/manga/mangaPerson.dart';
-import '../../widgets/card/mangaCard/manga_person_card.dart';
-import '../../api_service.dart';
+import '../../colors/app_colors.dart';
+import '../models/manga/manga.dart';
+import '../models/manga/manga_person.dart';
+import '../widgets/manga_person_card.dart';
+import '../api_service.dart';
 
 class MangaDetailScreen extends StatefulWidget {
   final Manga manga;
 
-  const MangaDetailScreen({Key? key, required this.manga}) : super(key: key);
+  const MangaDetailScreen({super.key, required this.manga});
 
   @override
   State<MangaDetailScreen> createState() => _AnimeDetailScreenState();
