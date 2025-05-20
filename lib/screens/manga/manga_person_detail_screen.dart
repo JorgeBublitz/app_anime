@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import '../models/anime/anime_person.dart';
+import 'package:app/models/manga/manga_person.dart';
 import '../../colors/app_colors.dart';
-import '../widgets/voice_card.dart';
-import 'package:app/models/dublagem/voice.dart';
-import '../api_service.dart';
-import '../../models/character.dart';
+import '../../api_service.dart';
+import 'package:app/models/character.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
-class AnimePersonDetailScreen extends StatefulWidget {
-  final AnimePerson animePerson;
-
-  const AnimePersonDetailScreen({super.key, required this.animePerson});
-
+class MangaPersonDetailScreen extends StatefulWidget {
+  final MangaPerson mangaPerson;
+  const MangaPersonDetailScreen({Key? key, required this.mangaPerson})
+    : super(key: key);
   @override
-  State<AnimePersonDetailScreen> createState() =>
-      _AnimePersonDetailScreenState();
+  State<MangaPersonDetailScreen> createState() =>
+      _MangaPersonDetailScreenState();
 }
 
-class _AnimePersonDetailScreenState extends State<AnimePersonDetailScreen> {
+class _MangaPersonDetailScreenState extends State<MangaPersonDetailScreen> {
   bool _expandedDesc = false;
   bool _isLoading = true;
   Character? _characterDetails;
@@ -39,7 +36,7 @@ class _AnimePersonDetailScreenState extends State<AnimePersonDetailScreen> {
 
       // Buscar detalhes completos do personagem
       final detalhes = await ApiService.detalhesPersonagem(
-        widget.animePerson.character.malId,
+        widget.mangaPerson.character.malId,
       );
 
       if (mounted) {
@@ -137,7 +134,6 @@ class _AnimePersonDetailScreenState extends State<AnimePersonDetailScreen> {
                         _characterDetails!.nicknames!.isNotEmpty)
                       _buildSliverSection(_buildNicknames()),
                     _buildSliverSection(_buildDescription()),
-                    _buildSliverSection(_buildVoicedCharacters()),
                   ],
                 ),
       ),
@@ -146,8 +142,7 @@ class _AnimePersonDetailScreenState extends State<AnimePersonDetailScreen> {
 
   PreferredSizeWidget _buildAppBar() => AppBar(
     elevation: 0,
-    backgroundColor: Colors.transparent,
-    flexibleSpace: _buildAppBarGradient(),
+    backgroundColor: AppColors.cor4,
     title: const Text(
       'Detalhes do Personagem',
       style: TextStyle(
@@ -159,16 +154,6 @@ class _AnimePersonDetailScreenState extends State<AnimePersonDetailScreen> {
     centerTitle: true,
   );
 
-  Widget _buildAppBarGradient() => Container(
-    decoration: BoxDecoration(
-      gradient: LinearGradient(
-        colors: [AppColors.cor2],
-        begin: Alignment.topCenter,
-        end: Alignment.bottomCenter,
-      ),
-    ),
-  );
-
   Widget _buildSliverSection(Widget child) => SliverToBoxAdapter(
     child: Padding(padding: const EdgeInsets.all(16), child: child),
   );
@@ -176,51 +161,10 @@ class _AnimePersonDetailScreenState extends State<AnimePersonDetailScreen> {
   Widget _buildHeader() => Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      _AnimePersonImage(widget.animePerson),
+      _MangaPersonImage(widget.mangaPerson),
       const SizedBox(width: 16),
       Expanded(
-        child: _AnimePersonBasicInfo(widget.animePerson, _characterDetails),
-      ),
-    ],
-  );
-
-  Widget _buildVoicedCharacters() => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      const _SectionTitle('Vozes'),
-      const SizedBox(height: 12),
-      SizedBox(
-        height: 170,
-        child: FutureBuilder<List<Voice>>(
-          future: ApiService.buscarVoiceActors(
-            widget.animePerson.character.malId,
-          ),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (snapshot.hasError ||
-                !snapshot.hasData ||
-                snapshot.data!.isEmpty) {
-              return const Center(
-                child: Text(
-                  "Sem dados disponíveis.",
-                  style: TextStyle(color: Colors.white70),
-                ),
-              );
-            }
-
-            return ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: snapshot.data!.length,
-              itemBuilder: (context, index) {
-                final voice = snapshot.data![index];
-                return VoiceCard(voice: voice);
-              },
-              separatorBuilder: (context, index) => const SizedBox(width: 12),
-            );
-          },
-        ),
+        child: _MangaPersonBasicInfo(widget.mangaPerson, _characterDetails),
       ),
     ],
   );
@@ -275,9 +219,9 @@ class _AnimePersonDetailScreenState extends State<AnimePersonDetailScreen> {
   );
 }
 
-class _AnimePersonImage extends StatelessWidget {
-  final AnimePerson animePerson;
-  const _AnimePersonImage(this.animePerson);
+class _MangaPersonImage extends StatelessWidget {
+  final MangaPerson mangaPerson;
+  const _MangaPersonImage(this.mangaPerson);
 
   @override
   Widget build(BuildContext context) {
@@ -290,7 +234,7 @@ class _AnimePersonImage extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: CachedNetworkImage(
-              imageUrl: animePerson.character.images.jpg.imageUrl,
+              imageUrl: mangaPerson.character.images.jpg.imageUrl,
               fit: BoxFit.cover,
               placeholder: (_, __) => Container(color: Colors.grey[800]),
               errorWidget:
@@ -318,7 +262,7 @@ class _AnimePersonImage extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    animePerson.role,
+                    mangaPerson.role,
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -366,11 +310,11 @@ class _InfoRow extends StatelessWidget {
   }
 }
 
-class _AnimePersonBasicInfo extends StatelessWidget {
-  final AnimePerson animePerson;
+class _MangaPersonBasicInfo extends StatelessWidget {
+  final MangaPerson mangaPerson;
   final Character? characterDetails;
 
-  const _AnimePersonBasicInfo(this.animePerson, this.characterDetails);
+  const _MangaPersonBasicInfo(this.mangaPerson, this.characterDetails);
 
   @override
   Widget build(BuildContext context) {
@@ -378,7 +322,7 @@ class _AnimePersonBasicInfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          animePerson.character.name,
+          mangaPerson.character.name,
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -398,10 +342,10 @@ class _AnimePersonBasicInfo extends StatelessWidget {
         const SizedBox(height: 12),
         _InfoRow(
           'Favorito',
-          (characterDetails?.favorite ?? animePerson.favorites).toString(),
+          (characterDetails?.favorite ?? mangaPerson.favorites).toString(),
         ),
-        _InfoRow('ID', animePerson.character.malId.toString()),
-        _InfoRow('Função', animePerson.role),
+        _InfoRow('ID', mangaPerson.character.malId.toString()),
+        _InfoRow('Função', mangaPerson.role),
       ],
     );
   }

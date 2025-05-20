@@ -122,9 +122,7 @@ class VoiceCard extends StatelessWidget {
                     vertical: 6,
                     horizontal: 8,
                   ),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.5),
-                  ),
+                  decoration: BoxDecoration(color: Colors.black),
                   child: Text(
                     voice.person.name,
                     textAlign: TextAlign.center,

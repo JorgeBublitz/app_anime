@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import '../models/anime/anime_person.dart';
-import '../widgets/anime_person_card.dart';
-import '../colors/app_colors.dart';
+import '../../models/manga/manga_person.dart';
+import '../../widgets/manga_person_card.dart';
+import '../../colors/app_colors.dart';
 
-class AllCharactersScreen extends StatefulWidget {
-  final List<AnimePerson> listaPersonagens;
+class AllCharactersScreenManga extends StatefulWidget {
+  final List<MangaPerson> listaPersonagens;
 
-  const AllCharactersScreen({Key? key, required this.listaPersonagens})
+  const AllCharactersScreenManga({Key? key, required this.listaPersonagens})
     : super(key: key);
 
   @override
-  _AllCharactersScreenState createState() => _AllCharactersScreenState();
+  _AllCharactersScreenMangaState createState() =>
+      _AllCharactersScreenMangaState();
 }
 
-class _AllCharactersScreenState extends State<AllCharactersScreen> {
+class _AllCharactersScreenMangaState extends State<AllCharactersScreenManga> {
   String _query = '';
 
-  List<AnimePerson> get _filteredList {
+  List<MangaPerson> get _filteredList {
     if (_query.isEmpty) return widget.listaPersonagens;
     return widget.listaPersonagens
         .where(
@@ -31,7 +32,7 @@ class _AllCharactersScreenState extends State<AllCharactersScreen> {
       backgroundColor: AppColors.cor1,
       appBar: AppBar(
         title: const Text('Personagens'),
-        backgroundColor: AppColors.cor2,
+        backgroundColor: AppColors.cor4,
         centerTitle: true,
         elevation: 1,
       ),
@@ -85,8 +86,8 @@ class _AllCharactersScreenState extends State<AllCharactersScreen> {
                           itemCount: _filteredList.length,
                           itemBuilder: (context, index) {
                             final person = _filteredList[index];
-                            return AnimePersonCard(
-                              personAnime: person,
+                            return MangaPersonCard(
+                              personManga: person,
                               compactMode: false,
                             );
                           },

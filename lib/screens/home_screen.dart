@@ -25,7 +25,7 @@ class HomeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.cor1,
       appBar: AppBar(
-        backgroundColor: AppColors.cor2,
+        backgroundColor: AppColors.cor4,
         elevation: 4,
         title: const Text(
           "OtakuHub",

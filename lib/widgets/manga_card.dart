@@ -1,92 +1,116 @@
 import 'package:flutter/material.dart';
 import '../models/manga/manga.dart';
 import '../colors/app_colors.dart';
-import '../screens/manga_detail_screen.dart';
+import '../screens/manga/manga_detail_screen.dart';
 
 class MangaCard extends StatelessWidget {
   final Manga manga;
-
-  MangaCard({required this.manga});
+  final double width;
+  const MangaCard({Key? key, required this.manga, this.width = 150})
+    : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MangaDetailScreen(manga: manga),
-          ),
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.cor2,
-          borderRadius: BorderRadius.circular(8), // Menor borderRadius
-        ),
-        width: 120, // Largura menor
-        height: 180, // Altura menor
+    return SizedBox(
+      width: width,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => MangaDetailScreen(manga: manga)),
+          );
+        },
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(8)),
-              child: Image.network(
-                manga.images.jpg.imageUrl,
-                width: double.infinity,
-                height: 90, // Menor altura para a imagem
-                fit: BoxFit.cover,
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5.0), // Padding mais enxuto
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+            Hero(
+              tag: manga.malId,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: AspectRatio(
+                  aspectRatio: 3 / 4,
+                  child: Stack(
+                    fit: StackFit.expand,
                     children: [
-                      Text(
-                        "#${manga.rank}. ",
-                        style: TextStyle(
-                          fontSize: 13, // Fonte menor
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
+                      Image.network(
+                        manga.images.jpg.imageUrl,
+                        fit: BoxFit.cover,
+                        loadingBuilder: (context, child, progress) {
+                          if (progress == null) return child;
+                          return Center(
+                            child: CircularProgressIndicator(
+                              value:
+                                  progress.expectedTotalBytes != null
+                                      ? progress.cumulativeBytesLoaded /
+                                          progress.expectedTotalBytes!
+                                      : null,
+                            ),
+                          );
+                        },
+                        errorBuilder:
+                            (_, __, ___) => Container(
+                              color: AppColors.cor1,
+                              child: Icon(
+                                Icons.broken_image,
+                                size: 40,
+                                color: Colors.white,
+                              ),
+                            ),
                       ),
-                      Expanded(
-                        child: Text(
-                          manga.title,
-                          style: TextStyle(
-                            fontSize: 13, // Fonte menor
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                      Positioned(
+                        bottom: 125,
+                        right: 5,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          decoration: BoxDecoration(
+                            color: Colors.amber,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            '${manga.score}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [Colors.transparent, Colors.black],
+                            ),
+                          ),
+                          child: Text(
+                            manga.title,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 4), // Menor espaçamento
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.star,
-                        color: Colors.amber,
-                        size: 14, // Ícone menor
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        manga.score.toString(),
-                        style: TextStyle(
-                          fontSize: 14, // Fonte menor para a nota
-                          color: Colors.amber,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
             ),
           ],

@@ -96,9 +96,17 @@ class ApiService {
     return data.map((json) => AnimePerson.fromJson(json)).toList();
   }
 
-  static Future<List<MangaPerson>> buscarPersonagensM(int mangaId) async {
+  static Future<List<MangaPerson>> buscarTodosPersonagensM(int mangaId) async {
     final data = await _getListData("manga/$mangaId/characters");
     return data.map((json) => MangaPerson.fromJson(json)).toList();
+  }
+
+  static Future<List<MangaPerson>> buscarPersonagensM(int mangaId) async {
+    final data = await _getListData("manga/$mangaId/characters");
+    return data
+        .map((json) => MangaPerson.fromJson(json))
+        .where((p) => p.role == "Main")
+        .toList();
   }
 
   // Método para buscar dubladores por idioma

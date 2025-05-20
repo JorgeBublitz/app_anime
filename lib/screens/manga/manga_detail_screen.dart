@@ -1,31 +1,31 @@
+import 'package:app/screens/manga/all_characters_screen_manga.dart';
 import 'package:flutter/material.dart';
+import '../../../colors/app_colors.dart';
+import '../../models/manga/manga.dart';
+import '../../models/manga/manga_person.dart';
+import '../../widgets/manga_person_card.dart';
+import '../../../api_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../models/anime/anime.dart';
-import '../../colors/app_colors.dart';
-import '../../api_service.dart';
-import '../../screens/all_characters_screen.dart';
-import '../widgets/anime_person_card.dart';
-import '../models/anime/anime_person.dart';
 
-class AnimeDetailScreen extends StatefulWidget {
-  final Anime anime;
-  const AnimeDetailScreen({super.key, required this.anime});
+class MangaDetailScreen extends StatefulWidget {
+  final Manga manga;
+  const MangaDetailScreen({super.key, required this.manga});
 
   @override
-  State<AnimeDetailScreen> createState() => _AnimeDetailScreenState();
+  State<MangaDetailScreen> createState() => __MangaDetailScreenState();
 }
 
-class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
+class __MangaDetailScreenState extends State<MangaDetailScreen> {
   bool _expandedDesc = false;
-  late Future<List<AnimePerson>> _mainCharactersFuture;
-  late Future<List<AnimePerson>> _allCharactersFuture;
+  late Future<List<MangaPerson>> _mainCharactersFuture;
+  late Future<List<MangaPerson>> _allCharactersFuture;
 
   @override
   void initState() {
     super.initState();
-    final animeId = widget.anime.malId;
-    _mainCharactersFuture = ApiService.buscarPersonagens(animeId);
-    _allCharactersFuture = ApiService.buscarTodosPersonagens(animeId);
+    final mangaId = widget.manga.malId;
+    _mainCharactersFuture = ApiService.buscarPersonagensM(mangaId);
+    _allCharactersFuture = ApiService.buscarTodosPersonagensM(mangaId);
   }
 
   @override
@@ -50,7 +50,7 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
 
   PreferredSizeWidget _buildAppBar() => AppBar(
     elevation: 0,
-    backgroundColor: Colors.transparent,
+    backgroundColor: AppColors.cor4,
     flexibleSpace: _buildAppBarGradient(),
     title: const Text(
       'Detalhes do Anime',
@@ -80,9 +80,9 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
   Widget _buildHeader() => Row(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      _AnimeImage(widget.anime),
+      _MangaImage(widget.manga),
       const SizedBox(width: 16),
-      Expanded(child: _AnimeBasicInfo(widget.anime)),
+      Expanded(child: _MangaBasicInfo(widget.manga)),
     ],
   );
 
@@ -93,7 +93,7 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
       const SizedBox(height: 14),
       SizedBox(
         height: 140, // Ajustado para o novo tamanho do card
-        child: FutureBuilder<List<AnimePerson>>(
+        child: FutureBuilder<List<MangaPerson>>(
           future: _mainCharactersFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -117,8 +117,8 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
               scrollDirection: Axis.horizontal,
               itemCount: itemCount,
               itemBuilder: (context, index) {
-                return AnimePersonCard(
-                  personAnime: characters[index],
+                return MangaPersonCard(
+                  personManga: characters[index],
                   compactMode: true,
                 );
               },
@@ -137,7 +137,7 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
       const SizedBox(height: 14),
       SizedBox(
         height: 190, // Ajustado para o novo tamanho do card
-        child: FutureBuilder<List<AnimePerson>>(
+        child: FutureBuilder<List<MangaPerson>>(
           future: _allCharactersFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -164,8 +164,8 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
                     scrollDirection: Axis.horizontal,
                     itemCount: itemCount,
                     itemBuilder: (context, index) {
-                      return AnimePersonCard(
-                        personAnime: characters[index],
+                      return MangaPersonCard(
+                        personManga: characters[index],
                         compactMode: true,
                       );
                     },
@@ -198,7 +198,7 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
       _SectionTitle('Sinopse'),
       const SizedBox(height: 12),
       _ExpandableDescription(
-        widget.anime.synopsis ?? 'Sinopse não disponível.',
+        widget.manga.synopsis ?? 'Sinopse não disponível.',
         _expandedDesc,
         () => setState(() => _expandedDesc = !_expandedDesc),
       ),
@@ -207,22 +207,23 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
 
   void _navigateToAllCharacters(
     BuildContext context,
-    List<AnimePerson> personAnimes,
+    List<MangaPerson> personManga,
   ) {
-    if (personAnimes.isEmpty) return;
+    if (personManga.isEmpty) return;
     Navigator.push(
       context,
       MaterialPageRoute(
         builder:
-            (context) => AllCharactersScreen(listaPersonagens: personAnimes),
+            (context) =>
+                AllCharactersScreenManga(listaPersonagens: personManga),
       ),
     );
   }
 }
 
-class _AnimeImage extends StatelessWidget {
-  final Anime anime;
-  const _AnimeImage(this.anime);
+class _MangaImage extends StatelessWidget {
+  final Manga manga;
+  const _MangaImage(this.manga);
 
   @override
   Widget build(BuildContext context) {
@@ -235,7 +236,7 @@ class _AnimeImage extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
             child: CachedNetworkImage(
-              imageUrl: anime.images.jpg.imageUrl,
+              imageUrl: manga.images.jpg.imageUrl,
               fit: BoxFit.cover,
               placeholder: (_, __) => Container(color: Colors.grey[800]),
               errorWidget:
@@ -259,7 +260,7 @@ class _AnimeImage extends StatelessWidget {
                   const Icon(Icons.star, color: Colors.amber, size: 16),
                   const SizedBox(width: 4),
                   Text(
-                    anime.score.toString(),
+                    manga.score.toString(),
                     style: const TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -276,9 +277,9 @@ class _AnimeImage extends StatelessWidget {
   }
 }
 
-class _AnimeBasicInfo extends StatelessWidget {
-  final Anime anime;
-  const _AnimeBasicInfo(this.anime);
+class _MangaBasicInfo extends StatelessWidget {
+  final Manga manga;
+  const _MangaBasicInfo(this.manga);
 
   @override
   Widget build(BuildContext context) {
@@ -286,7 +287,7 @@ class _AnimeBasicInfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          anime.title,
+          manga.title,
           style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
@@ -295,24 +296,13 @@ class _AnimeBasicInfo extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-        _InfoRow('Episódios', anime.episodes.toString()),
-        _InfoRow('Tipo', _translateType(anime.type)),
-        _InfoRow('Lançamento', anime.year.toString()),
-        _InfoRow('Temporada', _translateSeason(anime.season ?? 'N/A')),
-        _InfoRow('Status', _translateStatus(anime.status)),
+        _InfoRow("ID", manga.malId.toString()),
+        _InfoRow("Status", _translateStatus(manga.status)),
+        _InfoRow("Tipo", _translateType(manga.type)),
+        _InfoRow("Episodios", manga.chapters.toString()),
       ],
     );
   }
-
-  String _translateSeason(String? season) =>
-      {
-        'winter': 'Inverno',
-        'spring': 'Primavera',
-        'summer': 'Verao',
-        'fall': 'Outono',
-      }[season?.toLowerCase()] ??
-      season ??
-      'N/A';
 
   String _translateStatus(String status) =>
       {
