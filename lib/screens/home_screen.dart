@@ -1,4 +1,5 @@
 // lib/screens/home_screen.dart
+import 'package:app/screens/anime/all_anime_screen.dart';
 import 'package:flutter/material.dart';
 import '../models/anime/anime.dart';
 import '../models/manga/manga.dart';
@@ -55,19 +56,18 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   _sectionTitle("Top 10 Animes"),
                   const Spacer(),
-                  _buttonSection("Ver mais", isAnime: true),
+                  _buttonSection(
+                    "Ver mais",
+                    isAnime: true,
+                    context: context,
+                    listaAnime: animes, // passe diretamente a lista original
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
               _buildHorizontalList(sortedAnimes, isAnime: true),
               const SizedBox(height: 32),
-              Row(
-                children: [
-                  _sectionTitle("Top 10 Mangas"),
-                  const Spacer(),
-                  _buttonSection("Ver mais", isAnime: false),
-                ],
-              ),
+              Row(children: [_sectionTitle("Top 10 Mangas"), const Spacer()]),
               const SizedBox(height: 12),
               _buildHorizontalList(sortedMangas, isAnime: false),
             ],
@@ -89,10 +89,21 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buttonSection(String title, {required bool isAnime}) {
+  Widget _buttonSection(
+    String title, {
+    required bool isAnime,
+    required BuildContext context,
+    required List<Anime> listaAnime,
+  }) {
     return InkWell(
       onTap: () {
-        // Navegar para outra tela
+        if (isAnime) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => AllAnimeScreen()),
+          );
+        }
+        // Adicione outro caso para isAnime == false, se necessário
       },
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,

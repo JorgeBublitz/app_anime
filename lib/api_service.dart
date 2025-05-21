@@ -82,6 +82,8 @@ class ApiService {
     return Character.fromJson(data);
   }
 
+  
+
   // Métodos para Personagens
   static Future<List<AnimePerson>> buscarPersonagens(int animeId) async {
     final data = await _getListData("anime/$animeId/characters");

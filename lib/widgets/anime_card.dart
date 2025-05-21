@@ -5,9 +5,14 @@ import '../colors/app_colors.dart';
 
 class AnimeCard extends StatelessWidget {
   final Anime anime;
+  final bool compactMode;
   final double width;
-  const AnimeCard({Key? key, required this.anime, this.width = 150})
-    : super(key: key);
+  const AnimeCard({
+    Key? key,
+    required this.anime,
+    this.compactMode = false,
+    this.width = 150,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
