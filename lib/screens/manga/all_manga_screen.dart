@@ -1,23 +1,24 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:app/colors/app_colors.dart';
-import 'package:app/widgets/cards_anime/anime_card.dart';
-import 'package:app/models/anime/anime.dart';
-import 'package:app/screens/anime/anime_detail_screen.dart';
+import 'package:app/widgets/cards_manga/manga_card.dart';
+import 'package:app/models/manga/manga.dart';
+import 'package:app/screens/manga/manga_detail_screen.dart';
 import 'package:app/api_service.dart';
 
-class AllAnimeScreen extends StatefulWidget {
-  final List<Anime> initialAnimes;
-
-  const AllAnimeScreen({Key? key, required this.initialAnimes})
-    : super(key: key);
+class AllMangaScreen extends StatefulWidget {
+  final List<Manga> initialMangas;
+  const AllMangaScreen({
+    Key? key,
+    required this.initialMangas, // Torne obrigatório
+  }) : super(key: key);
 
   @override
-  _AllAnimeScreenState createState() => _AllAnimeScreenState();
+  _AllMangaScreenState createState() => _AllMangaScreenState();
 }
 
-class _AllAnimeScreenState extends State<AllAnimeScreen> {
-  List<Anime> _animes = [];
+class _AllMangaScreenState extends State<AllMangaScreen> {
+  List<Manga> _mangas = [];
   int _currentPage = 1;
   int _totalPages = 1;
   final int _itemsPerPage = 24;
@@ -33,7 +34,7 @@ class _AllAnimeScreenState extends State<AllAnimeScreen> {
     setState(() => _isLoading = true);
 
     try {
-      final result = await ApiService.fetchAnimes(
+      final result = await ApiService.fetchMangas(
         page: page,
         limit: _itemsPerPage,
         query: query,
@@ -42,8 +43,12 @@ class _AllAnimeScreenState extends State<AllAnimeScreen> {
 
       if (mounted) {
         setState(() {
-          _animes = result['animes'];
-          _totalPages = result['totalPages'];
+          // Combine dados iniciais com novos resultados
+          _mangas =
+              page == 1
+                  ? result['mangas'] ?? []
+                  : [..._mangas, ...result['mangas'] ?? []];
+          _totalPages = result['totalPages'] ?? 1;
         });
       }
     } catch (e) {
@@ -101,7 +106,7 @@ class _AllAnimeScreenState extends State<AllAnimeScreen> {
     return Scaffold(
       backgroundColor: AppColors.cor1,
       appBar: AppBar(
-        title: const Text('Catálogo de Animes'),
+        title: const Text('Catálogo de Mangás'),
         backgroundColor: AppColors.cor4,
         centerTitle: true,
         elevation: 1,
@@ -117,7 +122,7 @@ class _AllAnimeScreenState extends State<AllAnimeScreen> {
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
-                        hintText: 'Pesquisar anime...',
+                        hintText: 'Pesquisar mangás...',
                         filled: true,
                         fillColor: AppColors.cor2,
                         prefixIcon: const Icon(
@@ -160,8 +165,8 @@ class _AllAnimeScreenState extends State<AllAnimeScreen> {
 
   Widget _buildContent() {
     if (_isLoading) return _buildLoadingScreen();
-    if (_animes.isEmpty) return _buildEmptyScreen();
-    return _buildAnimeGrid();
+    if (_mangas.isEmpty) return _buildEmptyScreen();
+    return _buildMangaGrid();
   }
 
   Widget _buildLoadingScreen() {
@@ -171,7 +176,7 @@ class _AllAnimeScreenState extends State<AllAnimeScreen> {
         children: [
           CircularProgressIndicator(),
           SizedBox(height: 20),
-          Text('Carregando animes...', style: TextStyle(color: Colors.white70)),
+          Text('Carregando mangas...', style: TextStyle(color: Colors.white70)),
         ],
       ),
     );
@@ -186,7 +191,7 @@ class _AllAnimeScreenState extends State<AllAnimeScreen> {
     );
   }
 
-  Widget _buildAnimeGrid() {
+  Widget _buildMangaGrid() {
     return RefreshIndicator(
       onRefresh: () => _fetchPage(_currentPage, query: _searchQuery),
       child: Padding(
@@ -200,24 +205,24 @@ class _AllAnimeScreenState extends State<AllAnimeScreen> {
             mainAxisSpacing: 1,
             childAspectRatio: 0.75,
           ),
-          itemCount: _animes.length + (_isLoading ? 1 : 0),
+          itemCount: _mangas.length + (_isLoading ? 1 : 0),
           itemBuilder: (context, index) {
-            if (index >= _animes.length) {
+            if (index >= _mangas.length) {
               return const Center(child: CircularProgressIndicator());
             }
-            final anime = _animes[index];
+            final manga = _mangas[index];
             return GestureDetector(
               onTap: () {
-                if (anime.malId != null) {
+                if (manga.malId != null) {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AnimeDetailScreen(anime: anime),
+                      builder: (context) => MangaDetailScreen(manga: manga),
                     ),
                   );
                 }
               },
-              child: AnimeCard(anime: anime, showRank: false),
+              child: MangaCard(manga: manga, showRank: false),
             );
           },
         ),

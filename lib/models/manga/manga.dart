@@ -1,7 +1,7 @@
 import '../image.dart';
 
 class Manga {
-  final int malId;
+  final int? malId;
   final String url;
   final Images images;
   final String title;
@@ -49,28 +49,41 @@ class Manga {
 
   factory Manga.fromJson(Map<String, dynamic> json) {
     return Manga(
-      malId: json['mal_id'] ?? 0,
-      url: json['url'] ?? '',
+      malId: json['mal_id'] as int? ?? 0,
+      url: json['url'] as String? ?? '',
       images: Images.fromJson(json['images'] ?? {}),
-      title: json['title'] ?? '',
-      author: json['author'] ?? '',
-      titleEnglish: json['title_english'],
-      titleJapanese: json['title_japanese'],
-      titleSynonyms: List<String>.from(json['title_synonyms'] ?? []),
-      type: json['type'] ?? '',
-      chapters: json['chapters'],
-      volumes: json['volumes'],
-      status: json['status'] ?? '',
-      publishing: json['publishing'] ?? false,
-      score: (json['score'] ?? 0).toDouble(),
-      scoredBy: json['scored_by'] ?? 0,
-      rank: json['rank'] ?? 0,
-      popularity: json['popularity'] ?? 0,
-      members: json['members'] ?? 0,
-      favorites: json['favorites'] ?? 0,
-      synopsis: json['synopsis'],
-      background: json['background'],
+      title: json['title'] as String? ?? 'Sem título',
+      author: _parseAuthor(json['author']),
+      titleEnglish: json['title_english'] as String?,
+      titleJapanese: json['title_japanese'] as String?,
+      titleSynonyms: List<String>.from(
+        (json['title_synonyms'] ?? []).whereType<String>(),
+      ),
+      type: json['type'] as String? ?? 'Desconhecido',
+      chapters: json['chapters'] as int?,
+      volumes: json['volumes'] as int?,
+      status: json['status'] as String? ?? 'Desconhecido',
+      publishing: json['publishing'] as bool? ?? false,
+      score: (json['score'] as num?)?.toDouble() ?? 0.0,
+      scoredBy: json['scored_by'] as int? ?? 0,
+      rank: json['rank'] as int? ?? 0,
+      popularity: json['popularity'] as int? ?? 0,
+      members: json['members'] as int? ?? 0,
+      favorites: json['favorites'] as int? ?? 0,
+      synopsis: json['synopsis'] as String?,
+      background: json['background'] as String?,
     );
+  }
+
+  static String _parseAuthor(dynamic authorData) {
+    if (authorData is String) return authorData;
+    if (authorData is List) {
+      return authorData
+          .whereType<Map<String, dynamic>>()
+          .map<String>((a) => a['name'] as String? ?? '')
+          .join(', ');
+    }
+    return 'Autor desconhecido';
   }
 
   Map<String, dynamic> toJson() {

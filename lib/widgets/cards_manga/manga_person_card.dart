@@ -1,20 +1,20 @@
+// anime_person_card.dart
 import 'package:flutter/material.dart';
-import '../models/anime/anime_person.dart';
-import '../colors/app_colors.dart';
-import '../screens/anime/anime_person_detail_screen.dart';
+import '../../models/manga/manga_person.dart';
+import '../../colors/app_colors.dart';
+import '../../screens/manga/manga_person_detail_screen.dart';
 
-class AnimePersonCard extends StatelessWidget {
-  final AnimePerson personAnime;
+class MangaPersonCard extends StatelessWidget {
+  final MangaPerson personManga;
   final bool compactMode;
   final VoidCallback? onTap;
 
-  const AnimePersonCard({
+  const MangaPersonCard({
     Key? key,
-    required this.personAnime,
+    required this.personManga,
     this.compactMode = false,
     this.onTap,
   }) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     final double cardWidth = compactMode ? 100 : 140;
@@ -31,8 +31,8 @@ class AnimePersonCard extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder:
-                        (_) =>
-                            AnimePersonDetailScreen(animePerson: personAnime),
+                        (context) =>
+                            MangaPersonDetailScreen(mangaPerson: personManga),
                   ),
                 );
               },
@@ -41,7 +41,7 @@ class AnimePersonCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Hero(
-                tag: personAnime.character.malId,
+                tag: personManga.character.malId,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: AspectRatio(
@@ -50,7 +50,7 @@ class AnimePersonCard extends StatelessWidget {
                       fit: StackFit.expand,
                       children: [
                         Image.network(
-                          personAnime.character.images.jpg.imageUrl,
+                          personManga.character.images.jpg.imageUrl,
                           fit: BoxFit.cover,
                           loadingBuilder: (context, child, progress) {
                             if (progress == null) return child;
@@ -91,7 +91,7 @@ class AnimePersonCard extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              personAnime.character.name,
+                              personManga.character.name,
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 14,

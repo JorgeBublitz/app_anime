@@ -1,11 +1,14 @@
 // lib/screens/home_screen.dart
 import 'package:app/screens/anime/all_anime_screen.dart';
+import 'package:app/screens/manga/all_manga_screen.dart';
 import 'package:flutter/material.dart';
 import '../models/anime/anime.dart';
 import '../models/manga/manga.dart';
-import '../widgets/anime_card.dart';
-import '../widgets/manga_card.dart';
+import '../widgets/cards_anime/anime_card.dart';
+import '../widgets/cards_manga/manga_card.dart';
 import '../colors/app_colors.dart';
+import '../screens/anime/anime_detail_screen.dart';
+import '../screens/manga/manga_detail_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   final List<Anime> animes;
@@ -16,12 +19,16 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ordena os animes e mangas pelo rank
-    final sortedAnimes = List<Anime>.from(animes)
-      ..sort((a, b) => a.rank.compareTo(b.rank));
+    // Sort and take top 10 for display
+    final top10Animes =
+        List<Anime>.from(animes)
+          ..sort((a, b) => a.rank.compareTo(b.rank))
+          ..take(10).toList();
 
-    final sortedMangas = List<Manga>.from(mangas)
-      ..sort((a, b) => a.rank.compareTo(b.rank));
+    final top10Mangas =
+        List<Manga>.from(mangas)
+          ..sort((a, b) => a.rank.compareTo(b.rank))
+          ..take(10).toList();
 
     return Scaffold(
       backgroundColor: AppColors.cor1,
@@ -56,20 +63,21 @@ class HomeScreen extends StatelessWidget {
                 children: [
                   _sectionTitle("Top 10 Animes"),
                   const Spacer(),
-                  _buttonSection(
-                    "Ver mais",
-                    isAnime: true,
-                    context: context,
-                    listaAnime: animes, // passe diretamente a lista original
-                  ),
+                  _buttonSection("Ver mais", isAnime: true, context: context),
                 ],
               ),
               const SizedBox(height: 12),
-              _buildHorizontalList(sortedAnimes, isAnime: true),
+              _buildHorizontalList(top10Animes, isAnime: true),
               const SizedBox(height: 32),
-              Row(children: [_sectionTitle("Top 10 Mangas"), const Spacer()]),
+              Row(
+                children: [
+                  _sectionTitle("Top 10 Mangás"),
+                  const Spacer(),
+                  _buttonSection("Ver mais", isAnime: false, context: context),
+                ],
+              ),
               const SizedBox(height: 12),
-              _buildHorizontalList(sortedMangas, isAnime: false),
+              _buildHorizontalList(top10Mangas, isAnime: false),
             ],
           ),
         ),
@@ -93,17 +101,25 @@ class HomeScreen extends StatelessWidget {
     String title, {
     required bool isAnime,
     required BuildContext context,
-    required List<Anime> listaAnime,
   }) {
     return InkWell(
       onTap: () {
         if (isAnime) {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => AllAnimeScreen()),
+            MaterialPageRoute(
+              builder: (context) => AllAnimeScreen(initialAnimes: animes),
+            ),
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              // Corrigido aqui
+              builder: (context) => AllMangaScreen(initialMangas: mangas),
+            ),
           );
         }
-        // Adicione outro caso para isAnime == false, se necessário
       },
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
@@ -113,7 +129,7 @@ class HomeScreen extends StatelessWidget {
           fontSize: 16,
           fontWeight: FontWeight.bold,
           color: Colors.white,
-          letterSpacing: 1.1,
+          letterSpacing: 1.0,
         ),
       ),
     );
@@ -121,21 +137,34 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildHorizontalList(List<dynamic> lista, {required bool isAnime}) {
     return SizedBox(
-      height: 160,
+      height: 170,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: lista.length,
         itemBuilder: (context, index) {
           final item = lista[index];
-
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 6.0),
-            child: SizedBox(
-              width: 120,
-              child:
-                  isAnime
-                      ? AnimeCard(anime: item as Anime)
-                      : MangaCard(manga: item as Manga),
+            padding: const EdgeInsets.symmetric(horizontal: 3.0),
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) =>
+                            isAnime
+                                ? AnimeDetailScreen(anime: item as Anime)
+                                : MangaDetailScreen(manga: item as Manga),
+                  ),
+                );
+              },
+              child: SizedBox(
+                width: 130,
+                child:
+                    isAnime
+                        ? AnimeCard(anime: item as Anime, showRank: true)
+                        : MangaCard(manga: item as Manga, showRank: true),
+              ),
             ),
           );
         },

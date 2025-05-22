@@ -1,10 +1,12 @@
 import '../image.dart';
+import 'package:app/models/anime/genre_anime.dart';
 
 class Anime {
-  final int malId;
+  final int? malId;
   final String url;
   final Images images;
   final String title;
+  final List<GenreAnime> genres;
   final String? titleEnglish;
   final String? titleJapanese;
   final List<String> titleSynonyms;
@@ -28,6 +30,7 @@ class Anime {
     required this.url,
     required this.images, //uso
     required this.title, //uso
+    required this.genres,
     this.titleEnglish, //uso
     this.titleJapanese, //uso
     required this.titleSynonyms, //uso
@@ -35,7 +38,7 @@ class Anime {
     required this.source, //uso
     this.episodes, //uso
     required this.status,
-    required this.airing, 
+    required this.airing,
     required this.score,
     required this.rating,
     required this.rank,
@@ -53,6 +56,10 @@ class Anime {
       url: json['url'] ?? '',
       images: Images.fromJson(json['images'] ?? {}),
       title: json['title'] ?? '',
+      genres:
+          (json['genres'] as List? ?? [])
+              .map((g) => GenreAnime.fromJson(g))
+              .toList(),
       titleEnglish: json['title_english'],
       titleJapanese: json['title_japanese'],
       titleSynonyms: List<String>.from(json['title_synonyms'] ?? []),
@@ -90,7 +97,7 @@ class Anime {
       'score': score,
       'rating': rating,
       'rank': rank,
-      'popularity': popularity, 
+      'popularity': popularity,
       'favorites': favorites,
       if (synopsis != null) 'synopsis': synopsis,
       if (background != null) 'background': background,

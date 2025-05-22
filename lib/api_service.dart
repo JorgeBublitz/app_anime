@@ -48,6 +48,63 @@ class ApiService {
     return data.map((json) => Anime.fromJson(json)).toList();
   }
 
+  static Future<Map<String, dynamic>> fetchAnimes({
+    required int page,
+    int limit = 24,
+    String query = '',
+    bool sfw = true,
+  }) async {
+    // Corrigindo a URL para incluir o endpoint /anime
+    final url = Uri.parse(
+      '$_baseUrl/anime?page=$page&limit=$limit&q=${Uri.encodeQueryComponent(query)}&sfw=$sfw',
+    );
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final pagination = data['pagination'];
+      final items = data['data'] as List;
+      final animes = items.map((e) => Anime.fromJson(e)).toList();
+
+      return {
+        'animes': animes,
+        'totalPages': pagination['last_visible_page'] ?? 1,
+      };
+    } else {
+      throw Exception('Erro na requisição: ${response.statusCode}');
+    }
+  }
+
+  static Future<Map<String, dynamic>> fetchMangas({
+    required int page,
+    int limit = 24,
+    String query = '',
+    bool sfw = true,
+  }) async {
+    final url = Uri.parse(
+      '$_baseUrl/manga?page=$page&limit=$limit&q=${Uri.encodeQueryComponent(query)}&sfw=$sfw',
+    );
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final pagination = data['pagination'];
+      final items = data['data'] as List;
+
+      // Corrigido para Manga
+      final mangas = items.map((e) => Manga.fromJson(e)).toList();
+
+      return {
+        'mangas': mangas, // Chave corrigida
+        'totalPages': pagination['last_visible_page'] ?? 1,
+      };
+    } else {
+      throw Exception('Erro na requisição: ${response.statusCode}');
+    }
+  }
+
   // Métodos para Top Mangás
   static Future<List<Manga>> topMangas({int limit = 10}) async {
     final data = await _getListData("top/manga?limit=$limit");
@@ -81,8 +138,6 @@ class ApiService {
     final data = await _getSingleData("characters/$characterId");
     return Character.fromJson(data);
   }
-
-  
 
   // Métodos para Personagens
   static Future<List<AnimePerson>> buscarPersonagens(int animeId) async {

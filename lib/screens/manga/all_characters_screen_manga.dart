@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/manga/manga_person.dart';
-import '../../widgets/manga_person_card.dart';
+import '../../widgets/cards_manga/manga_person_card.dart';
 import '../../colors/app_colors.dart';
 
 class AllCharactersScreenManga extends StatefulWidget {

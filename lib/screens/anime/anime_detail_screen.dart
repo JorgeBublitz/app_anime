@@ -4,7 +4,7 @@ import '../../models/anime/anime.dart';
 import '../../../colors/app_colors.dart';
 import '../../../api_service.dart';
 import 'all_characters_screen_anime.dart';
-import '../../widgets/anime_person_card.dart';
+import '../../widgets/cards_anime/anime_person_card.dart';
 import '../../models/anime/anime_person.dart';
 
 class AnimeDetailScreen extends StatefulWidget {
@@ -24,7 +24,7 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
   void initState() {
     super.initState();
     final animeId = widget.anime.malId;
-    _mainCharactersFuture = ApiService.buscarPersonagens(animeId);
+    _mainCharactersFuture = ApiService.buscarPersonagens(animeId!);
     _allCharactersFuture = ApiService.buscarTodosPersonagens(animeId);
   }
 
@@ -214,7 +214,8 @@ class _AnimeDetailScreenState extends State<AnimeDetailScreen> {
       context,
       MaterialPageRoute(
         builder:
-            (context) => AllCharactersScreenAnime(listaPersonagens: personAnimes),
+            (context) =>
+                AllCharactersScreenAnime(listaPersonagens: personAnimes),
       ),
     );
   }

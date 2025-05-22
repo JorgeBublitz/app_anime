@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../colors/app_colors.dart';
 import '../../models/manga/manga.dart';
 import '../../models/manga/manga_person.dart';
-import '../../widgets/manga_person_card.dart';
+import '../../widgets/cards_manga/manga_person_card.dart';
 import '../../../api_service.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -24,7 +24,7 @@ class __MangaDetailScreenState extends State<MangaDetailScreen> {
   void initState() {
     super.initState();
     final mangaId = widget.manga.malId;
-    _mainCharactersFuture = ApiService.buscarPersonagensM(mangaId);
+    _mainCharactersFuture = ApiService.buscarPersonagensM(mangaId!);
     _allCharactersFuture = ApiService.buscarTodosPersonagensM(mangaId);
   }
 
