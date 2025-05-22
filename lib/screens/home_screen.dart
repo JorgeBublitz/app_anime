@@ -14,8 +14,7 @@ class HomeScreen extends StatelessWidget {
   final List<Anime> animes;
   final List<Manga> mangas;
 
-  const HomeScreen({Key? key, required this.animes, required this.mangas})
-    : super(key: key);
+  const HomeScreen({super.key, required this.animes, required this.mangas});
 
   @override
   Widget build(BuildContext context) {

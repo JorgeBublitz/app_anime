@@ -8,11 +8,11 @@ class VoiceCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   const VoiceCard({
-    Key? key,
+    super.key,
     required this.voice,
     this.compactMode = false,
     this.onTap,
-  }) : super(key: key);
+  });
 
   /// Retorna o código ISO do país correspondente ao idioma
   String? _getCountryCode(String lang) {

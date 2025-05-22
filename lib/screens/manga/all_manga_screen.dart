@@ -9,9 +9,9 @@ import 'package:app/api_service.dart';
 class AllMangaScreen extends StatefulWidget {
   final List<Manga> initialMangas;
   const AllMangaScreen({
-    Key? key,
+    super.key,
     required this.initialMangas, // Torne obrigatório
-  }) : super(key: key);
+  });
 
   @override
   _AllMangaScreenState createState() => _AllMangaScreenState();

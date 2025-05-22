@@ -6,8 +6,7 @@ import '../../colors/app_colors.dart';
 class AllCharactersScreenAnime extends StatefulWidget {
   final List<AnimePerson> listaPersonagens;
 
-  const AllCharactersScreenAnime({Key? key, required this.listaPersonagens})
-    : super(key: key);
+  const AllCharactersScreenAnime({super.key, required this.listaPersonagens});
 
   @override
   _AllCharactersScreenAnimeState createState() =>

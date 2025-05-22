@@ -6,8 +6,7 @@ class MangaCard extends StatelessWidget {
   final Manga manga;
   final bool showRank;
 
-  const MangaCard({Key? key, required this.manga, this.showRank = false})
-    : super(key: key);
+  const MangaCard({super.key, required this.manga, this.showRank = false});
 
   @override
   Widget build(BuildContext context) {

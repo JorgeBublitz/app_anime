@@ -10,11 +10,11 @@ class MangaPersonCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   const MangaPersonCard({
-    Key? key,
+    super.key,
     required this.personManga,
     this.compactMode = false,
     this.onTap,
-  }) : super(key: key);
+  });
   @override
   Widget build(BuildContext context) {
     final double cardWidth = compactMode ? 100 : 140;

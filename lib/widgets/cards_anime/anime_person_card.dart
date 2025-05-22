@@ -9,11 +9,11 @@ class AnimePersonCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   const AnimePersonCard({
-    Key? key,
+    super.key,
     required this.personAnime,
     this.compactMode = false,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

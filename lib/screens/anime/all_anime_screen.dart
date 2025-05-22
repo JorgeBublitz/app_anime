@@ -9,8 +9,7 @@ import 'package:app/api_service.dart';
 class AllAnimeScreen extends StatefulWidget {
   final List<Anime> initialAnimes;
 
-  const AllAnimeScreen({Key? key, required this.initialAnimes})
-    : super(key: key);
+  const AllAnimeScreen({super.key, required this.initialAnimes});
 
   @override
   _AllAnimeScreenState createState() => _AllAnimeScreenState();

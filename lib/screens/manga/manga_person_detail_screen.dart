@@ -7,8 +7,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 class MangaPersonDetailScreen extends StatefulWidget {
   final MangaPerson mangaPerson;
-  const MangaPersonDetailScreen({Key? key, required this.mangaPerson})
-    : super(key: key);
+  const MangaPersonDetailScreen({super.key, required this.mangaPerson});
   @override
   State<MangaPersonDetailScreen> createState() =>
       _MangaPersonDetailScreenState();
