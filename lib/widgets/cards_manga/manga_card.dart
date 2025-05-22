@@ -296,13 +296,6 @@ class _MangaCardState extends State<MangaCard>
     );
   }
 
-  String _formatAuthor(String author) {
-    if (author.length > 15) {
-      return '${author.substring(0, 12)}...';
-    }
-    return author;
-  }
-
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
       case 'publishing':
