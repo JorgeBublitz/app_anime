@@ -34,7 +34,6 @@ class _HomeScreenState extends State<HomeScreen>
   bool _isLoading = true;
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
-  bool _isSearchExpanded = false;
 
   @override
   void initState() {
@@ -49,11 +48,6 @@ class _HomeScreenState extends State<HomeScreen>
     setState(() {
       _isAdultContentEnabled = prefs.getBool('adultContentEnabled') ?? false;
     });
-  }
-
-  Future<void> _savePreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('adultContentEnabled', _isAdultContentEnabled);
   }
 
   Future<void> _initializeData() async {
@@ -116,23 +110,6 @@ class _HomeScreenState extends State<HomeScreen>
     }
   }
 
-  void _toggleAdultContent() {
-    setState(() {
-      _isAdultContentEnabled = !_isAdultContentEnabled;
-      _savePreferences();
-      _initializeData();
-    });
-  }
-
-  void _toggleSearch() {
-    setState(() {
-      _isSearchExpanded = !_isSearchExpanded;
-      if (!_isSearchExpanded) {
-        _searchController.clear();
-      }
-    });
-  }
-
   @override
   void dispose() {
     _tabController.dispose();
@@ -146,67 +123,53 @@ class _HomeScreenState extends State<HomeScreen>
       backgroundColor: AppColors.cor1,
       appBar: _buildAppBar(),
       body: _isLoading ? _buildLoadingIndicator() : _buildBody(),
-      floatingActionButton: _buildFloatingActionButton(),
     );
   }
 
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
-      backgroundColor: AppColors.cor4,
       elevation: 4,
-      title:
-          _isSearchExpanded
-              ? TextField(
-                controller: _searchController,
-                style: const TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  hintText: "Buscar anime, mangá...",
-                  hintStyle: TextStyle(color: Colors.white70),
-                  border: InputBorder.none,
+      backgroundColor: AppColors.cor1,
+      title: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Icon(Icons.account_circle_rounded, color: Colors.white, size: 28),
+          SizedBox(width: 8),
+          Text(
+            'Otaku Hub',
+            style: TextStyle(
+              fontWeight: FontWeight.w900,
+              fontSize: 30,
+              color: Colors.white,
+              letterSpacing: 1.5,
+              wordSpacing: 2,
+              fontFamily: 'Montserrat',
+              shadows: [
+                Shadow(
+                  color: Colors.black54,
+                  offset: Offset(2, 2),
+                  blurRadius: 4,
                 ),
-                onSubmitted: (value) {
-                  // Implementar busca
-                  _toggleSearch();
-                },
-                autofocus: true,
-              )
-              : const Text(
-                "OtakuHub",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  letterSpacing: 1.2,
-                ),
-              ),
-      actions: [
-        IconButton(
-          icon: Icon(
-            _isSearchExpanded ? Icons.close : Icons.search,
-            color: Colors.white,
+              ],
+            ),
           ),
-          tooltip: _isSearchExpanded ? "Fechar" : "Buscar",
-          onPressed: _toggleSearch,
-        ),
-        IconButton(
-          icon: Icon(
-            _isAdultContentEnabled ? Icons.no_adult_content : Icons.shield,
-            color: _isAdultContentEnabled ? Colors.red : Colors.green,
-          ),
-          tooltip:
-              _isAdultContentEnabled
-                  ? "Desativar conteúdo adulto"
-                  : "Ativar conteúdo adulto",
-          onPressed: _toggleAdultContent,
-        ),
-      ],
+        ],
+      ),
+      centerTitle: true,
       bottom: TabBar(
         controller: _tabController,
         indicatorColor: Colors.white,
-        labelColor: Colors.white, // cor do texto quando selecionado
-        unselectedLabelColor:
-            Colors.grey, // cor do texto quando não selecionado
-        tabs: const [Tab(text: 'Mangas'), Tab(text: 'Animes')],
+        indicatorWeight: 3,
+        labelColor: Colors.white,
+        unselectedLabelColor: Colors.grey.shade400,
+        overlayColor: MaterialStateProperty.all(Colors.transparent),
+        labelStyle: const TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+          fontFamily: 'RobotoMono',
+          letterSpacing: 0.5,
+        ),
+        tabs: const [Tab(text: 'Animes'), Tab(text: 'Mangás')],
       ),
     );
   }
@@ -449,65 +412,6 @@ class _HomeScreenState extends State<HomeScreen>
           );
         },
       ),
-    );
-  }
-
-  Widget _buildFloatingActionButton() {
-    return FloatingActionButton(
-      backgroundColor: AppColors.cor4,
-      child: const Icon(Icons.filter_list),
-      onPressed: () {
-        _showFilterDialog();
-      },
-    );
-  }
-
-  void _showFilterDialog() {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            backgroundColor: AppColors.cor1,
-            title: const Text("Filtros", style: TextStyle(color: Colors.white)),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SwitchListTile(
-                  title: const Text(
-                    "Conteúdo Adulto",
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  subtitle: Text(
-                    _isAdultContentEnabled
-                        ? "Ativado - Todo conteúdo será exibido"
-                        : "Desativado - Conteúdo adulto será filtrado",
-                    style: TextStyle(
-                      color: _isAdultContentEnabled ? Colors.red : Colors.green,
-                      fontSize: 12,
-                    ),
-                  ),
-                  value: _isAdultContentEnabled,
-                  onChanged: (value) {
-                    Navigator.pop(context);
-                    _toggleAdultContent();
-                  },
-                  activeColor: Colors.red,
-                  inactiveTrackColor: Colors.grey.shade700,
-                ),
-                const Divider(color: Colors.grey),
-                // Aqui podem ser adicionados mais filtros no futuro
-              ],
-            ),
-            actions: [
-              TextButton(
-                child: const Text(
-                  "Fechar",
-                  style: TextStyle(color: Colors.white),
-                ),
-                onPressed: () => Navigator.pop(context),
-              ),
-            ],
-          ),
     );
   }
 }
