@@ -189,15 +189,15 @@ class _AllAnimeScreenState extends State<AllAnimeScreen> {
     return RefreshIndicator(
       onRefresh: () => _fetchPage(_currentPage, query: _searchQuery),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         child: GridView.builder(
           controller: _scrollController,
           physics: const BouncingScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 3,
-            crossAxisSpacing: 1,
-            mainAxisSpacing: 1,
-            childAspectRatio: 0.75,
+            crossAxisCount: 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 0.85,
           ),
           itemCount: _animes.length + (_isLoading ? 1 : 0),
           itemBuilder: (context, index) {

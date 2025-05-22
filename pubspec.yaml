@@ -16,11 +16,18 @@ dependencies:
   connectivity_plus: ^6.1.4
   cached_network_image: ^3.3.0
   country_icons: ^2.0.0
+  shared_preferences: ^2.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/icon.png"
 
 flutter:
   uses-material-design: true
@@ -30,6 +37,6 @@ flutter:
 flutter_native_splash:
   color: "#ffffff"
   image: assets/images/splash.png
-  android: true
+  android: false
   ios: false
   web: false

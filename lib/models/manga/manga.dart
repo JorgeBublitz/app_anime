@@ -1,9 +1,11 @@
 import '../image.dart';
+import 'genre_manga.dart';
 
 class Manga {
   final int? malId;
   final String url;
   final Images images;
+  final List<GenreManga> genres;
   final String title;
   final String author;
   final String? titleEnglish;
@@ -29,6 +31,7 @@ class Manga {
     required this.images,
     required this.title,
     required this.author,
+    required this.genres,
     this.titleEnglish,
     this.titleJapanese,
     required this.titleSynonyms,
@@ -49,27 +52,29 @@ class Manga {
 
   factory Manga.fromJson(Map<String, dynamic> json) {
     return Manga(
-      malId: json['mal_id'] as int? ?? 0,
-      url: json['url'] as String? ?? '',
-      images: Images.fromJson(json['images'] ?? {}),
-      title: json['title'] as String? ?? 'Sem título',
+      malId: json['mal_id'] as int?,
+      url: json['url'] as String,
+      images: Images.fromJson(json['images'] as Map<String, dynamic>),
+      title: json['title'] as String,
       author: _parseAuthor(json['author']),
+      genres:
+          (json['genres'] as List)
+              .map((g) => GenreManga.fromJson(g as Map<String, dynamic>))
+              .toList(),
       titleEnglish: json['title_english'] as String?,
       titleJapanese: json['title_japanese'] as String?,
-      titleSynonyms: List<String>.from(
-        (json['title_synonyms'] ?? []).whereType<String>(),
-      ),
-      type: json['type'] as String? ?? 'Desconhecido',
+      titleSynonyms: (json['title_synonyms'] as List).cast<String>(),
+      type: json['type'] as String,
       chapters: json['chapters'] as int?,
       volumes: json['volumes'] as int?,
-      status: json['status'] as String? ?? 'Desconhecido',
-      publishing: json['publishing'] as bool? ?? false,
-      score: (json['score'] as num?)?.toDouble() ?? 0.0,
-      scoredBy: json['scored_by'] as int? ?? 0,
-      rank: json['rank'] as int? ?? 0,
-      popularity: json['popularity'] as int? ?? 0,
-      members: json['members'] as int? ?? 0,
-      favorites: json['favorites'] as int? ?? 0,
+      status: json['status'] as String,
+      publishing: json['publishing'] as bool,
+      score: json['score'] as double,
+      scoredBy: json['scored_by'] as int,
+      rank: json['rank'] as int,
+      popularity: json['popularity'] as int,
+      members: json['members'] as int,
+      favorites: json['favorites'] as int,
       synopsis: json['synopsis'] as String?,
       background: json['background'] as String?,
     );
@@ -96,6 +101,7 @@ class Manga {
       if (titleEnglish != null) 'title_english': titleEnglish,
       if (titleJapanese != null) 'title_japanese': titleJapanese,
       'title_synonyms': titleSynonyms,
+      'genres': genres.map((g) => g.toJson()).toList(),
       'type': type,
       if (chapters != null) 'chapters': chapters,
       if (volumes != null) 'volumes': volumes,

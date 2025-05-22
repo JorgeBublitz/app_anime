@@ -198,4 +198,41 @@ class ApiService {
         )
         .toList();
   }
+
+  static Future<List<Map<String, dynamic>>> buscarTudo(String termo) async {
+    final resultados = <Map<String, dynamic>>[];
+
+    final responseAnime = await http.get(
+      Uri.parse('https://api.jikan.moe/v4/anime?q=$termo'),
+    );
+    final responseManga = await http.get(
+      Uri.parse('https://api.jikan.moe/v4/manga?q=$termo'),
+    );
+    final responsePersonagem = await http.get(
+      Uri.parse('https://api.jikan.moe/v4/characters?q=$termo'),
+    );
+
+    if (responseAnime.statusCode == 200) {
+      final json = jsonDecode(responseAnime.body);
+      for (var item in json['data']) {
+        resultados.add({"tipo": "anime", "item": Anime.fromJson(item)});
+      }
+    }
+
+    if (responseManga.statusCode == 200) {
+      final json = jsonDecode(responseManga.body);
+      for (var item in json['data']) {
+        resultados.add({"tipo": "manga", "item": Manga.fromJson(item)});
+      }
+    }
+
+    if (responsePersonagem.statusCode == 200) {
+      final json = jsonDecode(responsePersonagem.body);
+      for (var item in json['data']) {
+        resultados.add({"tipo": "personagem", "item": item});
+      }
+    }
+
+    return resultados;
+  }
 }
